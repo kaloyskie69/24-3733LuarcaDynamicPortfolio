@@ -1,0 +1,605 @@
+/* ==========================================================================
+   PERSONAL WEBSITE — DARK THEME
+   Built on top of Bootstrap 5.3's data-bs-theme="dark" (set on <html>),
+   which already re-themes cards, forms, tables, and dropdowns. This file
+   adds the custom palette, spacing rhythm, and motion on top of that.
+   ========================================================================== */
+
+:root {
+    --pw-bg: #0d0f14;
+    --pw-bg-elevated: #15181f;
+    --pw-surface: #1b1f28;
+    --pw-surface-hover: #21262f;
+    --pw-border: #2a2f3a;
+    --pw-text: #e7e9ee;
+    --pw-text-muted: #9aa1ae;
+    --pw-accent: #6c8cff;
+    --pw-accent-soft: rgba(108, 140, 255, 0.15);
+    --pw-radius: 0.9rem;
+    --pw-transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: var(--pw-bg);
+    background-image:
+        radial-gradient(circle at 15% 0%, rgba(108, 140, 255, 0.10), transparent 45%),
+        radial-gradient(circle at 85% 0%, rgba(108, 140, 255, 0.07), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(129, 199, 132, 0.05), transparent 55%);
+    /* "fixed" anchors the glow to the viewport instead of the full (tall,
+       scrollable) page. Without this, each gradient's radius is computed
+       against the whole document height, so on a long page it fades out
+       well before the bottom — leaving a visible flat-color seam partway
+       down. Pinning it to the viewport keeps the look identical no matter
+       how far you scroll or how long the page is. */
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: 100% 100vh;
+    color: var(--pw-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.page-content {
+    flex: 1 0 auto;
+}
+
+/* ---------------- NAVBAR ---------------- */
+
+.navbar {
+    background: rgba(13, 15, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--pw-border);
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
+}
+
+.navbar-brand {
+    letter-spacing: 0.01em;
+}
+
+.navbar .nav-link {
+    transition: color var(--pw-transition), transform var(--pw-transition);
+    margin: 0 0.15rem;
+}
+
+.navbar .nav-link:hover {
+    color: #fff !important;
+    transform: translateY(-1px);
+}
+
+/* ---------------- CARDS ---------------- */
+
+.card {
+    background-color: var(--pw-surface);
+    border: 1px solid var(--pw-border);
+    border-radius: var(--pw-radius);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    transition: transform var(--pw-transition), box-shadow var(--pw-transition), border-color var(--pw-transition);
+}
+
+.card:hover {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    border-color: #394152;
+}
+
+.card-header {
+    background-color: var(--pw-bg-elevated);
+    border-bottom: 1px solid var(--pw-border);
+    border-radius: var(--pw-radius) var(--pw-radius) 0 0 !important;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ---------------- STAT CARDS ---------------- */
+
+.stat-card {
+    text-align: center;
+    padding: 1.75rem 1rem;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-card .stat-number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* ---------------- AUTH PAGES ---------------- */
+
+.auth-wrapper {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    max-width: 440px;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.auth-card .card-body {
+    padding: 2rem;
+}
+
+/* ---------------- FORMS ---------------- */
+
+.form-control, .form-select {
+    background-color: var(--pw-bg-elevated);
+    border: 1px solid var(--pw-border);
+    color: var(--pw-text);
+    transition: border-color var(--pw-transition), box-shadow var(--pw-transition), background-color var(--pw-transition);
+    padding: 0.6rem 0.85rem;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--pw-bg-elevated);
+    border-color: var(--pw-accent);
+    box-shadow: 0 0 0 0.2rem var(--pw-accent-soft);
+    color: var(--pw-text);
+}
+
+.form-label {
+    color: var(--pw-text-muted);
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
+
+.form-text {
+    color: var(--pw-text-muted);
+}
+
+/* ---------------- BUTTONS ---------------- */
+
+.btn {
+    border-radius: 0.6rem;
+    padding: 0.55rem 1.2rem;
+    font-weight: 500;
+    transition: transform var(--pw-transition), box-shadow var(--pw-transition), background-color var(--pw-transition), filter var(--pw-transition);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-sm {
+    border-radius: 0.5rem;
+}
+
+.btn-dark {
+    background-color: #2b3240;
+    border-color: #2b3240;
+}
+
+.btn-dark:hover {
+    background-color: #363f50;
+    border-color: #363f50;
+}
+
+/* ---------------- BADGES ---------------- */
+
+.badge-active {
+    background-color: #1f9d55;
+}
+
+.badge-inactive {
+    background-color: #5b6472;
+}
+
+.hobby-badge {
+    background-color: var(--pw-surface-hover);
+    color: var(--pw-text);
+    border: 1px solid var(--pw-border);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.55rem 1.1rem;
+    margin: 0 0.5rem 0.5rem 0;
+    display: inline-block;
+    transition: transform var(--pw-transition), border-color var(--pw-transition), background-color var(--pw-transition);
+}
+
+.hobby-badge:hover {
+    transform: translateY(-2px);
+    border-color: var(--pw-accent);
+    background-color: var(--pw-surface);
+}
+
+/* ---------------- SECTION HEADERS (Personal Info / Education / Skills / etc.) ---------------- */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1rem;
+}
+
+.section-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.section-icon-slate  { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+.section-icon-blue   { background: rgba(108, 140, 255, 0.15); color: #8fb0ff; }
+.section-icon-green  { background: rgba(46, 204, 113, 0.15);  color: #4ade80; }
+.section-icon-amber  { background: rgba(251, 191, 36, 0.15);  color: #fcd34d; }
+.section-icon-purple { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; }
+
+/* ---------------- TABLES ---------------- */
+
+.table {
+    --bs-table-bg: transparent;
+    color: var(--pw-text);
+}
+
+.table thead th {
+    white-space: nowrap;
+    color: var(--pw-text-muted);
+    font-weight: 600;
+    border-bottom-width: 1px;
+}
+
+.table tbody tr {
+    transition: background-color var(--pw-transition);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--pw-surface-hover);
+}
+
+/* ---------------- TABS ---------------- */
+
+.nav-tabs {
+    border-bottom: 1px solid var(--pw-border);
+    gap: 0.25rem;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--pw-text-muted);
+    border-radius: 0.6rem 0.6rem 0 0;
+    padding: 0.65rem 1.1rem;
+    transition: color var(--pw-transition), background-color var(--pw-transition);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--pw-text);
+    background-color: var(--pw-surface-hover);
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background-color: var(--pw-surface);
+    border-bottom: 2px solid var(--pw-accent);
+}
+
+/* ---------------- REPEATER / LIST ITEMS ---------------- */
+
+.list-group-item {
+    background-color: transparent;
+    border-color: var(--pw-border);
+    color: var(--pw-text);
+    transition: background-color var(--pw-transition), padding-left var(--pw-transition);
+}
+
+.list-group-item:hover {
+    background-color: var(--pw-surface-hover);
+    padding-left: 1.4rem;
+}
+
+.border-primary {
+    border-color: var(--pw-accent) !important;
+}
+
+/* ---------------- ALERTS ---------------- */
+
+.alert {
+    border-radius: 0.7rem;
+    border: 1px solid transparent;
+    animation: fadeInUp 320ms ease both;
+}
+
+/* ---------------- FOOTER ---------------- */
+
+footer {
+    border-color: var(--pw-border) !important;
+    color: var(--pw-text-muted);
+}
+
+/* ---------------- SPACING RHYTHM ---------------- */
+
+.card + .card,
+.row + .card,
+.mb-4 {
+    margin-bottom: 1.75rem !important;
+}
+
+.g-2 > * {
+    padding: 0.35rem;
+}
+
+/* ---------------- ANIMATIONS ---------------- */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 420ms ease both;
+}
+
+.fade-in-up .card {
+    animation: fadeInUp 420ms ease both;
+}
+
+.fade-in-up .row > div:nth-child(1) .card { animation-delay: 40ms; }
+.fade-in-up .row > div:nth-child(2) .card { animation-delay: 90ms; }
+.fade-in-up .row > div:nth-child(3) .card { animation-delay: 140ms; }
+.fade-in-up .row > div:nth-child(4) .card { animation-delay: 190ms; }
+.fade-in-up .row > div:nth-child(5) .card { animation-delay: 240ms; }
+.fade-in-up .row > div:nth-child(6) .card { animation-delay: 290ms; }
+
+/* ---------------- ASYNC / AJAX LOADING FEEDBACK ---------------- */
+
+.pw-update-overlay {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    color: var(--pw-text-muted);
+    font-size: 0.9rem;
+}
+
+.pw-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--pw-border);
+    border-top-color: var(--pw-accent);
+    border-radius: 50%;
+    animation: pw-spin 700ms linear infinite;
+}
+
+@keyframes pw-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------------- PROJECT CARDS ("My Projects") ---------------- */
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.1rem;
+}
+
+.project-card {
+    background: linear-gradient(135deg, #1c2029 0%, #232838 100%);
+    border: 1px solid var(--pw-border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--pw-transition), border-color var(--pw-transition), box-shadow var(--pw-transition);
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pw-accent), #4ecdc4, #81c784);
+    transition: left 0.4s ease;
+}
+
+.project-card:hover::before {
+    left: 100%;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--pw-accent);
+    box-shadow: 0 10px 26px rgba(108, 140, 255, 0.18);
+}
+
+.project-card h5 {
+    color: #8fb0ff;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+}
+
+.tech-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pw-accent), #4d7bf0);
+    padding: 0.25rem 0.65rem;
+    border-radius: 1rem;
+    font-weight: 500;
+    transition: transform var(--pw-transition);
+}
+
+.tech-tag:hover {
+    transform: translateY(-2px);
+}
+
+/* ---------------- ACCOUNT DROPDOWN ---------------- */
+
+.account-avatar {
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pw-accent), #4d7bf0);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 3.25rem;
+    height: 3.25rem;
+    font-size: 1.3rem;
+}
+
+.account-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.35rem 0.75rem !important;
+    border-radius: 2rem;
+    transition: background-color var(--pw-transition);
+}
+
+.account-toggle:hover {
+    background-color: var(--pw-surface-hover);
+}
+
+.account-toggle::after {
+    margin-left: 0.3rem;
+}
+
+.dropdown-menu {
+    background-color: var(--pw-surface);
+    border: 1px solid var(--pw-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    padding: 0.5rem;
+    margin-top: 0.5rem !important;
+    animation: fadeInUp 180ms ease both;
+}
+
+.dropdown-item {
+    color: var(--pw-text);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    transition: background-color var(--pw-transition);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--pw-surface-hover);
+    color: #fff;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #ff6b7a;
+}
+
+.dropdown-divider {
+    border-color: var(--pw-border);
+}
+
+/* ---------------- PAGE TITLES ---------------- */
+
+.page-title {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.page-title .accent-text {
+    background: linear-gradient(135deg, var(--pw-accent), #81c784);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+    color: var(--pw-text-muted);
+}
+
+/* ---------------- STAT CARD ICON + COLOR VARIANTS ---------------- */
+
+.stat-icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.6rem;
+    font-size: 1.1rem;
+}
+
+.stat-icon-blue   { background: rgba(108, 140, 255, 0.15); color: #8fb0ff; }
+.stat-icon-green  { background: rgba(46, 204, 113, 0.15);  color: #4ade80; }
+.stat-icon-gray   { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+.stat-icon-purple { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; }
+.stat-icon-teal   { background: rgba(45, 212, 191, 0.15);  color: #5eead4; }
+.stat-icon-amber  { background: rgba(251, 191, 36, 0.15);  color: #fcd34d; }
+
+.stat-number-blue   { color: #8fb0ff; }
+.stat-number-green  { color: #4ade80; }
+.stat-number-gray   { color: #cbd5e1; }
+.stat-number-purple { color: #c4b5fd; }
+.stat-number-teal   { color: #5eead4; }
+.stat-number-amber  { color: #fcd34d; }
+
+/* ---------------- SCROLLBAR (WEBKIT) ---------------- */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--pw-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--pw-border);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #394152;
+}

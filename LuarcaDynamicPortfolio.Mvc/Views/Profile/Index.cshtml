@@ -1,0 +1,128 @@
+@model LuarcaDynamicPortfolio.Mvc.Models.ViewModels.Profile.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+    var passwordModel = ViewBag.PasswordModel as LuarcaDynamicPortfolio.Mvc.Models.ViewModels.Profile.ChangePasswordViewModel ?? new LuarcaDynamicPortfolio.Mvc.Models.ViewModels.Profile.ChangePasswordViewModel();
+}
+
+<div class="mb-4 pb-2 border-bottom border-secondary">
+    <h3 class="page-title mb-1">
+        <i class="bi bi-person-gear text-primary me-2"></i> Account Profile
+    </h3>
+    <p class="page-subtitle text-muted mb-0">
+        Modify your personal profile information and manage account security.
+    </p>
+</div>
+
+<div class="row g-4">
+    <!-- User Account Summary & Modify Information -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-secondary h-100">
+            <div class="card-header bg-dark section-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-person-lines-fill me-2"></i> Modify Your Information</span>
+                <span class="badge @(Model.RoleName == "Admin" ? "bg-warning text-dark" : "bg-primary")">
+                    @Model.RoleName Account
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Profile" asp-action="UpdateProfile" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="UserId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label fw-semibold text-muted">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-at"></i></span>
+                            <input asp-for="Username" class="form-control" readonly disabled />
+                        </div>
+                        <small class="text-muted">Username cannot be changed after registration.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-card-text"></i></span>
+                            <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label fw-semibold">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="p-3 rounded bg-dark border border-secondary mb-4">
+                        <div class="row g-2 text-muted small">
+                            <div class="col-sm-6">
+                                <div><i class="bi bi-calendar-event me-1"></i> <strong>Registered:</strong> @Model.DateCreated.ToString("MMM dd, yyyy")</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div>
+                                    <i class="bi bi-shield-check me-1"></i> <strong>Status:</strong>
+                                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                                        @(Model.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Change Password -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-secondary h-100">
+            <div class="card-header bg-dark section-header">
+                <span class="fw-bold"><i class="bi bi-key-fill me-2"></i> Change Password</span>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Profile" asp-action="ChangePassword" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="CurrentPassword" class="form-label fw-semibold">Current Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-shield-lock"></i></span>
+                            <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" placeholder="Enter current password" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="NewPassword" class="form-label fw-semibold">New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="NewPassword" id="NewPassword" class="form-control" placeholder="Min. 6 characters" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="ConfirmNewPassword" class="form-label fw-semibold">Confirm New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" name="ConfirmNewPassword" id="ConfirmNewPassword" class="form-control" placeholder="Repeat new password" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-warning w-100">
+                        <i class="bi bi-arrow-repeat me-1"></i> Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

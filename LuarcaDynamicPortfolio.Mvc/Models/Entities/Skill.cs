@@ -1,0 +1,10 @@
+namespace LuarcaDynamicPortfolio.Mvc.Models.Entities
+{
+    public class Skill
+    {
+        public int SkillId { get; set; }
+        public string SkillName { get; set; } = string.Empty;
+        public int DisplayOrder { get; set; } = 0;
+        public bool IsActive { get; set; } = true;
+    }
+}
