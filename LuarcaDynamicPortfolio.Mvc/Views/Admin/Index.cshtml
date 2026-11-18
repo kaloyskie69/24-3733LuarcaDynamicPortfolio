@@ -5,38 +5,40 @@
     var activeTab = ViewBag.ActiveTab as string ?? "users";
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-    <div>
-        <h3 class="page-title mb-1 text-warning">
-            <i class="bi bi-speedometer2 me-2"></i> Administrative Control Center
-        </h3>
-        <p class="page-subtitle text-muted mb-0">
-            Manage users, inspect platform analytics, and dynamically modify website content.
-        </p>
+<header class="editorial-masthead">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-2">
+        <div>
+            <span class="overline overline-accent">ADMINISTRATION</span>
+            <h1 class="headline-title mb-0">ADMIN DASHBOARD</h1>
+        </div>
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-sm">
+                <i class="bi bi-eye-fill me-1"></i> View Live Site
+            </a>
+        </div>
     </div>
-    <div class="mt-2 mt-md-0">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-eye me-1"></i> Preview Live Website
-        </a>
+    <div class="border-top border-bottom border-dark py-2">
+        <span class="caption-text text-uppercase fw-bold">
+            Signed in as: <strong class="text-danger">@User.Identity?.Name</strong> (Administrator)
+        </span>
     </div>
-</div>
+</header>
 
-<!-- Main Nav Tabs -->
-<ul class="nav nav-pills mb-4 gap-2 bg-dark p-2 rounded border border-secondary" id="adminTabs" role="tablist">
+<!-- Nav Tabs -->
+<ul class="nav nav-pills mb-4" id="adminTabs" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link @(activeTab == "users" ? "active" : "")" id="users-tab" data-bs-toggle="pill" data-bs-target="#tab-users" type="button" role="tab">
-            <i class="bi bi-people-fill me-1"></i> User Accounts
-            <span class="badge bg-secondary ms-1">@Model.Users.Count</span>
+            Users (@Model.Users.Count)
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link @(activeTab == "stats" ? "active" : "")" id="stats-tab" data-bs-toggle="pill" data-bs-target="#tab-stats" type="button" role="tab">
-            <i class="bi bi-graph-up-arrow me-1"></i> Statistic Reports
+            Statistics
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link @(activeTab.StartsWith("content") ? "active" : "")" id="content-tab" data-bs-toggle="pill" data-bs-target="#tab-content" type="button" role="tab">
-            <i class="bi bi-layout-text-window-reverse me-1"></i> Website Content Editor
+            Edit Website Content
         </button>
     </li>
 </ul>
@@ -44,243 +46,231 @@
 <div class="tab-content" id="adminTabsContent">
     
     <!-- ========================================================================= -->
-    <!-- TAB 1: USERS MANAGEMENT (Requirements: View-Only info, Remove or Tag Inactive) -->
+    <!-- TAB 1: USERS (Requirements: View-Only info, Remove or Tag Inactive) -->
     <!-- ========================================================================= -->
     <div class="tab-pane fade @(activeTab == "users" ? "show active" : "")" id="tab-users" role="tabpanel">
-        <div class="card shadow-sm border-secondary">
-            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-                <span class="fw-bold">
-                    <i class="bi bi-person-lines-fill text-primary me-2"></i> Registered User Directory
-                </span>
-                <span class="badge bg-info text-dark">View-Only Info & Status Controls</span>
+        <div class="card p-0">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>USER ACCOUNTS</span>
+                <span class="caption-text">View-only user list with status controls</span>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle mb-0">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th>#</th>
-                                <th>Username</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Date Registered</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.Users.Any())
-                            {
-                                @foreach (var u in Model.Users)
-                                {
-                                    <tr>
-                                        <td>@u.UserId</td>
-                                        <td class="fw-semibold">
-                                            <i class="bi bi-person text-muted me-1"></i> @u.Username
-                                        </td>
-                                        <td>@(string.IsNullOrEmpty(u.FullName) ? "—" : u.FullName)</td>
-                                        <td>@u.Email</td>
-                                        <td>
-                                            <span class="badge @(u.RoleId == 1 ? "bg-warning text-dark" : "bg-secondary")">
-                                                @(u.Role?.RoleName ?? (u.RoleId == 1 ? "Admin" : "User"))
-                                            </span>
-                                        </td>
-                                        <td>@u.DateCreated.ToString("MMM dd, yyyy")</td>
-                                        <td>
-                                            <span class="badge @(u.IsActive ? "bg-success" : "bg-danger")">
-                                                @(u.IsActive ? "Active" : "Inactive")
-                                            </span>
-                                        </td>
-                                        <td class="text-end">
-                                            <div class="d-inline-flex gap-1">
-                                                <!-- Requirement b.ii: Tag as in-active / active -->
-                                                <form asp-controller="Admin" asp-action="ToggleUserStatus" method="post" class="d-inline">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="userId" value="@u.UserId" />
-                                                    <input type="hidden" name="isActive" value="@(u.IsActive ? "false" : "true")" />
-                                                    <button type="submit" class="btn btn-sm @(u.IsActive ? "btn-outline-warning" : "btn-outline-success")"
-                                                            title="@(u.IsActive ? "Tag as Inactive" : "Activate User")">
-                                                        <i class="bi @(u.IsActive ? "bi-person-slash" : "bi-person-check")"></i>
-                                                        @(u.IsActive ? "Deactivate" : "Activate")
-                                                    </button>
-                                                </form>
-
-                                                <!-- Requirement b.ii: Remove user -->
-                                                <form asp-controller="Admin" asp-action="DeleteUser" method="post" class="d-inline">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="userId" value="@u.UserId" />
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                            onclick="return confirm('Are you sure you want to permanently remove this user account?');"
-                                                            title="Delete User">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Date Registered</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Users.Any())
+                        {
+                            @foreach (var u in Model.Users)
                             {
                                 <tr>
-                                    <td colspan="8" class="text-center py-4 text-muted">No users found in database.</td>
+                                    <td class="caption-text font-monospace">#@u.UserId</td>
+                                    <td class="fw-bold">@u.Username</td>
+                                    <td>@(string.IsNullOrEmpty(u.FullName) ? "—" : u.FullName)</td>
+                                    <td>@u.Email</td>
+                                    <td>
+                                        <span class="badge @(u.RoleId == 1 ? "bg-danger" : "bg-secondary")">
+                                            @(u.Role?.RoleName ?? (u.RoleId == 1 ? "Admin" : "User"))
+                                        </span>
+                                    </td>
+                                    <td class="caption-text">@u.DateCreated.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <span class="badge @(u.IsActive ? "bg-success" : "bg-danger")">
+                                            @(u.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <!-- Toggle Status -->
+                                            <form asp-controller="Admin" asp-action="ToggleUserStatus" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@u.UserId" />
+                                                <input type="hidden" name="isActive" value="@(u.IsActive ? "false" : "true")" />
+                                                <button type="submit" class="btn btn-sm @(u.IsActive ? "btn-secondary" : "btn-primary")">
+                                                    @(u.IsActive ? "Deactivate" : "Activate")
+                                                </button>
+                                            </form>
+
+                                            <!-- Remove User -->
+                                            <form asp-controller="Admin" asp-action="DeleteUser" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@u.UserId" />
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Are you sure you want to delete user @u.Username?');">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">No users found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- TAB 2: STATISTIC REPORTS (Requirement b.iii: can view statistic reports) -->
+    <!-- TAB 2: STATISTICS (Requirement: Can view statistic reports) -->
     <!-- ========================================================================= -->
     <div class="tab-pane fade @(activeTab == "stats" ? "show active" : "")" id="tab-stats" role="tabpanel">
         
-        <!-- Summary Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-2">
-                <div class="card bg-dark border-primary shadow-sm text-center p-3">
-                    <small class="text-muted text-uppercase fw-bold">Total Users</small>
-                    <h2 class="text-primary fw-bold my-1">@Model.TotalUsers</h2>
-                    <small class="text-muted">Registered in DB</small>
+        <!-- Metric Cards -->
+        <div class="row g-3 mb-5">
+            <div class="col-6 col-lg-2">
+                <div class="stat-metric-box metric-accent">
+                    <span class="overline">TOTAL USERS</span>
+                    <div class="metric-number">@Model.TotalUsers</div>
+                    <span class="caption-text">All accounts</span>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-2">
-                <div class="card bg-dark border-success shadow-sm text-center p-3">
-                    <small class="text-muted text-uppercase fw-bold">Active</small>
-                    <h2 class="text-success fw-bold my-1">@Model.ActiveUsers</h2>
-                    <small class="text-muted">Can sign in</small>
+            <div class="col-6 col-lg-2">
+                <div class="stat-metric-box">
+                    <span class="overline">ACTIVE</span>
+                    <div class="metric-number text-success">@Model.ActiveUsers</div>
+                    <span class="caption-text">Can log in</span>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-2">
-                <div class="card bg-dark border-danger shadow-sm text-center p-3">
-                    <small class="text-muted text-uppercase fw-bold">Inactive</small>
-                    <h2 class="text-danger fw-bold my-1">@Model.InactiveUsers</h2>
-                    <small class="text-muted">Deactivated</small>
+            <div class="col-6 col-lg-2">
+                <div class="stat-metric-box">
+                    <span class="overline">INACTIVE</span>
+                    <div class="metric-number text-danger">@Model.InactiveUsers</div>
+                    <span class="caption-text">Disabled</span>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-2">
-                <div class="card bg-dark border-warning shadow-sm text-center p-3">
-                    <small class="text-muted text-uppercase fw-bold">Admins</small>
-                    <h2 class="text-warning fw-bold my-1">@Model.AdminCount</h2>
-                    <small class="text-muted">Full privileges</small>
+            <div class="col-6 col-lg-2">
+                <div class="stat-metric-box">
+                    <span class="overline">ADMINS</span>
+                    <div class="metric-number">@Model.AdminCount</div>
+                    <span class="caption-text">Full access</span>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-2">
-                <div class="card bg-dark border-info shadow-sm text-center p-3">
-                    <small class="text-muted text-uppercase fw-bold">Regular Users</small>
-                    <h2 class="text-info fw-bold my-1">@Model.RegularUserCount</h2>
-                    <small class="text-muted">Standard accounts</small>
+            <div class="col-6 col-lg-2">
+                <div class="stat-metric-box">
+                    <span class="overline">REGULAR USERS</span>
+                    <div class="metric-number">@Model.RegularUserCount</div>
+                    <span class="caption-text">Standard</span>
                 </div>
             </div>
-            <div class="col-sm-6 col-lg-2">
-                <div class="card bg-dark border-secondary shadow-sm text-center p-3">
-                    <small class="text-muted text-uppercase fw-bold">7-Day Signups</small>
-                    <h2 class="text-light fw-bold my-1">@Model.SignupsLast7Days</h2>
-                    <small class="text-muted">Recent growth</small>
+            <div class="col-6 col-lg-2">
+                <div class="stat-metric-box">
+                    <span class="overline">NEW (7 DAYS)</span>
+                    <div class="metric-number">@Model.SignupsLast7Days</div>
+                    <span class="caption-text">Recent signups</span>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activity Audit Log Table -->
-        <div class="card shadow-sm border-secondary">
-            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-                <span class="fw-bold"><i class="bi bi-clock-history me-2"></i> Recent Platform Activity Log</span>
-                <span class="badge bg-secondary">Top 25 Events</span>
+        <!-- Recent Activity Log Table -->
+        <div class="card p-0">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>RECENT ACTIVITY LOG</span>
+                <span class="caption-text">Latest 25 actions</span>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-dark table-sm table-hover align-middle mb-0">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>Action</th>
-                                <th>Details</th>
-                                <th>User</th>
-                                <th>IP Address</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.RecentActivity.Any())
-                            {
-                                @foreach (var log in Model.RecentActivity)
-                                {
-                                    <tr>
-                                        <td>@log.ActionDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                                        <td>
-                                            <span class="badge bg-dark border border-secondary text-light">@log.ActionType</span>
-                                        </td>
-                                        <td class="text-secondary small">@log.ActionDetail</td>
-                                        <td>@(log.User?.Username ?? "System / Anonymous")</td>
-                                        <td><code>@(log.IPAddress ?? "—")</code></td>
-                                    </tr>
-                                }
-                            }
-                            else
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date &amp; Time</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>User</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentActivity.Any())
+                        {
+                            @foreach (var log in Model.RecentActivity)
                             {
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">No audit activity logged yet.</td>
+                                    <td class="caption-text font-monospace">@log.ActionDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td><span class="chip">@log.ActionType</span></td>
+                                    <td class="body-small text-dark">@log.ActionDetail</td>
+                                    <td class="fw-bold">@(log.User?.Username ?? "System / Anonymous")</td>
+                                    <td><code>@(log.IPAddress ?? "—")</code></td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No activity logged yet.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- TAB 3: WEBSITE CONTENT EDITOR (Requirement b.iv & Content a, b, c, d) -->
+    <!-- TAB 3: WEBSITE CONTENT EDITOR (Requirements: Content a, b, c, d) -->
     <!-- ========================================================================= -->
     <div class="tab-pane fade @(activeTab.StartsWith("content") ? "show active" : "")" id="tab-content" role="tabpanel">
         
         <div class="accordion" id="contentAccordion">
             
             <!-- SECTION A: ABOUT THE BUSINESS / COMPANY -->
-            <div class="accordion-item bg-dark border-secondary mb-3 rounded overflow-hidden">
+            <div class="accordion-item">
                 <h2 class="accordion-header" id="headingCompany">
-                    <button class="accordion-button bg-dark text-light fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCompany" aria-expanded="true">
-                        <i class="bi bi-building text-primary me-2"></i> Section A: About the Business / Company
+                    <button class="accordion-button @(activeTab == "content-company" || activeTab == "content" ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCompany" aria-expanded="@(activeTab == "content-company" || activeTab == "content" ? "true" : "false")">
+                        A. ABOUT THE BUSINESS / COMPANY
                     </button>
                 </h2>
-                <div id="collapseCompany" class="accordion-collapse collapse show">
-                    <div class="accordion-body p-4">
+                <div id="collapseCompany" class="accordion-collapse collapse @(activeTab == "content-company" || activeTab == "content" ? "show" : "")">
+                    <div class="accordion-body">
                         <form asp-controller="Admin" asp-action="UpdateCompany" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="CompanyInfoId" value="@Model.Company.CompanyInfoId" />
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Company / Business Name</label>
+                                    <label class="form-label">Company Name</label>
                                     <input type="text" name="CompanyName" class="form-control" value="@Model.Company.CompanyName" required />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tagline</label>
+                                    <label class="form-label">Tagline</label>
                                     <input type="text" name="Tagline" class="form-control" value="@Model.Company.Tagline" />
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">About Description / Overview</label>
+                                <label class="form-label">About Description</label>
                                 <textarea name="AboutDescription" class="form-control" rows="3">@Model.Company.AboutDescription</textarea>
                             </div>
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Mission Statement</label>
+                                    <label class="form-label">Mission</label>
                                     <textarea name="Mission" class="form-control" rows="2">@Model.Company.Mission</textarea>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Vision Statement</label>
+                                    <label class="form-label">Vision</label>
                                     <textarea name="Vision" class="form-control" rows="2">@Model.Company.Vision</textarea>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-1"></i> Save Company Information
+                                Save Company Info <i class="bi bi-save ms-1"></i>
                             </button>
                         </form>
                     </div>
@@ -288,64 +278,63 @@
             </div>
 
             <!-- SECTION B: PRODUCTS AND SERVICES -->
-            <div class="accordion-item bg-dark border-secondary mb-3 rounded overflow-hidden">
+            <div class="accordion-item">
                 <h2 class="accordion-header" id="headingProducts">
-                    <button class="accordion-button bg-dark text-light fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProducts">
-                        <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Section B: Products and Services Catalog
+                    <button class="accordion-button @(activeTab == "content-products" ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProducts" aria-expanded="@(activeTab == "content-products" ? "true" : "false")">
+                        B. PRODUCTS AND SERVICES
                     </button>
                 </h2>
-                <div id="collapseProducts" class="accordion-collapse collapse">
-                    <div class="accordion-body p-4">
+                <div id="collapseProducts" class="accordion-collapse collapse @(activeTab == "content-products" ? "show" : "")">
+                    <div class="accordion-body">
                         
                         <!-- Add New Item Form -->
-                        <div class="p-3 mb-4 bg-dark border border-secondary rounded">
-                            <h6 class="fw-bold text-info mb-3"><i class="bi bi-plus-circle me-1"></i> Add / Edit Product or Service</h6>
+                        <div class="p-4 border border-dark bg-white mb-4">
+                            <span class="overline overline-accent">ADD PRODUCT OR SERVICE</span>
                             <form asp-controller="Admin" asp-action="UpsertProductService" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="ProductServiceId" value="0" />
 
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-5">
-                                        <label class="form-label small fw-semibold">Title / Name</label>
-                                        <input type="text" name="Title" class="form-control form-control-sm" placeholder="e.g. Web Development Service" required />
+                                        <label class="form-label">Title / Name</label>
+                                        <input type="text" name="Title" class="form-control" placeholder="e.g. Web Development" required />
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Category</label>
-                                        <select name="Category" class="form-select form-select-sm">
+                                        <label class="form-label">Category</label>
+                                        <select name="Category" class="form-select">
                                             <option value="Service">Service</option>
                                             <option value="Product">Product</option>
-                                            <option value="Software Solution">Software Solution</option>
+                                            <option value="Project">Project</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small fw-semibold">Tech / Category Tags</label>
-                                        <input type="text" name="Tags" class="form-control form-control-sm" placeholder="e.g. C#, ASP.NET, SQL" />
+                                        <label class="form-label">Tags (Comma Separated)</label>
+                                        <input type="text" name="Tags" class="form-control" placeholder="e.g. C#, ASP.NET, SQL" />
                                     </div>
                                 </div>
 
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-8">
-                                        <label class="form-label small fw-semibold">Description</label>
-                                        <input type="text" name="Description" class="form-control form-control-sm" placeholder="Brief summary of offering..." required />
+                                        <label class="form-label">Description</label>
+                                        <input type="text" name="Description" class="form-control" placeholder="Brief description..." required />
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="form-label small fw-semibold">Display Order</label>
-                                        <input type="number" name="DisplayOrder" class="form-control form-control-sm" value="1" />
+                                        <label class="form-label">Display Order</label>
+                                        <input type="number" name="DisplayOrder" class="form-control" value="1" />
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-info btn-sm w-100 text-dark fw-semibold">
-                                            <i class="bi bi-plus-lg me-1"></i> Add Item
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            Add Item
                                         </button>
                                     </div>
                                 </div>
                             </form>
                         </div>
 
-                        <!-- Existing Products and Services List -->
-                        <h6 class="fw-bold text-light mb-2">Existing Catalog Items</h6>
+                        <!-- Existing Items Table -->
                         <div class="table-responsive">
-                            <table class="table table-dark table-sm table-hover align-middle mb-0">
-                                <thead class="table-secondary">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
                                     <tr>
                                         <th>Order</th>
                                         <th>Category</th>
@@ -362,15 +351,15 @@
                                         @foreach (var item in Model.ProductsServices)
                                         {
                                             <tr>
-                                                <td>@item.DisplayOrder</td>
+                                                <td class="caption-text">#@item.DisplayOrder</td>
                                                 <td>
-                                                    <span class="badge @(item.Category == "Product" ? "bg-warning text-dark" : "bg-primary")">
+                                                    <span class="badge @(item.Category == "Product" ? "bg-warning" : "bg-primary")">
                                                         @item.Category
                                                     </span>
                                                 </td>
-                                                <td class="fw-semibold">@item.Title</td>
-                                                <td class="text-secondary small">@item.Description</td>
-                                                <td><small class="text-muted">@(item.Tags ?? "—")</small></td>
+                                                <td class="fw-bold">@item.Title</td>
+                                                <td class="body-small">@item.Description</td>
+                                                <td><span class="caption-text">@(item.Tags ?? "—")</span></td>
                                                 <td>
                                                     <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
                                                         @(item.IsActive ? "Active" : "Inactive")
@@ -380,9 +369,9 @@
                                                     <form asp-controller="Admin" asp-action="DeleteProductService" method="post" class="d-inline">
                                                         @Html.AntiForgeryToken()
                                                         <input type="hidden" name="id" value="@item.ProductServiceId" />
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                                onclick="return confirm('Remove this product/service?');">
-                                                            <i class="bi bi-trash"></i>
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                                onclick="return confirm('Remove @item.Title?');">
+                                                            Delete
                                                         </button>
                                                     </form>
                                                 </td>
@@ -392,7 +381,7 @@
                                     else
                                     {
                                         <tr>
-                                            <td colspan="7" class="text-center py-3 text-muted">No products or services listed.</td>
+                                            <td colspan="7" class="text-center py-3 text-muted">No items found.</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -403,47 +392,47 @@
             </div>
 
             <!-- SECTION C: CONTACT INFORMATION -->
-            <div class="accordion-item bg-dark border-secondary mb-3 rounded overflow-hidden">
+            <div class="accordion-item">
                 <h2 class="accordion-header" id="headingContact">
-                    <button class="accordion-button bg-dark text-light fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact">
-                        <i class="bi bi-telephone-fill text-warning me-2"></i> Section C: Contact Information
+                    <button class="accordion-button @(activeTab == "content-contact" ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="@(activeTab == "content-contact" ? "true" : "false")">
+                        C. CONTACT INFORMATION
                     </button>
                 </h2>
-                <div id="collapseContact" class="accordion-collapse collapse">
-                    <div class="accordion-body p-4">
+                <div id="collapseContact" class="accordion-collapse collapse @(activeTab == "content-contact" ? "show" : "")">
+                    <div class="accordion-body">
                         <form asp-controller="Admin" asp-action="UpdateContact" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="ContactInfoId" value="@Model.Contact.ContactInfoId" />
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Physical Address</label>
+                                    <label class="form-label">Address</label>
                                     <input type="text" name="Address" class="form-control" value="@Model.Contact.Address" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Contact Phone Number</label>
+                                    <label class="form-label">Phone Number</label>
                                     <input type="text" name="ContactNumber" class="form-control" value="@Model.Contact.ContactNumber" />
                                 </div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Email Address</label>
+                                    <label class="form-label">Email Address</label>
                                     <input type="email" name="Email" class="form-control" value="@Model.Contact.Email" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Office Hours</label>
+                                    <label class="form-label">Office Hours</label>
                                     <input type="text" name="OfficeHours" class="form-control" value="@Model.Contact.OfficeHours" />
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Social Media / Channels</label>
+                                <label class="form-label">Links (Social Media / Website)</label>
                                 <input type="text" name="SocialLinks" class="form-control" value="@Model.Contact.SocialLinks" />
                             </div>
 
-                            <button type="submit" class="btn btn-warning">
-                                <i class="bi bi-save me-1"></i> Save Contact Information
+                            <button type="submit" class="btn btn-primary">
+                                Save Contact Info <i class="bi bi-save ms-1"></i>
                             </button>
                         </form>
                     </div>
@@ -451,41 +440,41 @@
             </div>
 
             <!-- SECTION D: OWNER'S INFORMATION -->
-            <div class="accordion-item bg-dark border-secondary mb-3 rounded overflow-hidden">
+            <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOwner">
-                    <button class="accordion-button bg-dark text-light fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOwner">
-                        <i class="bi bi-person-badge-fill text-success me-2"></i> Section D: Owner's Information
+                    <button class="accordion-button @(activeTab == "content-owner" ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOwner" aria-expanded="@(activeTab == "content-owner" ? "true" : "false")">
+                        D. OWNER'S INFORMATION
                     </button>
                 </h2>
-                <div id="collapseOwner" class="accordion-collapse collapse">
-                    <div class="accordion-body p-4">
+                <div id="collapseOwner" class="accordion-collapse collapse @(activeTab == "content-owner" ? "show" : "")">
+                    <div class="accordion-body">
                         <form asp-controller="Admin" asp-action="UpdateOwner" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="OwnerInfoId" value="@Model.Owner.OwnerInfoId" />
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Owner Full Name</label>
+                                    <label class="form-label">Full Name</label>
                                     <input type="text" name="FullName" class="form-control" value="@Model.Owner.FullName" required />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Professional Role / Title</label>
+                                    <label class="form-label">Title / Role</label>
                                     <input type="text" name="TitleRole" class="form-control" value="@Model.Owner.TitleRole" />
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Owner Biography</label>
+                                <label class="form-label">Biography</label>
                                 <textarea name="Bio" class="form-control" rows="4">@Model.Owner.Bio</textarea>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Profile Image Path</label>
+                                <label class="form-label">Profile Image Path</label>
                                 <input type="text" name="ProfileImagePath" class="form-control" value="@Model.Owner.ProfileImagePath" />
                             </div>
 
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-save me-1"></i> Save Owner's Information
+                            <button type="submit" class="btn btn-primary">
+                                Save Owner Info <i class="bi bi-save ms-1"></i>
                             </button>
                         </form>
                     </div>

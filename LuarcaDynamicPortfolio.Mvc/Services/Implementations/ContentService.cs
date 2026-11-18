@@ -24,31 +24,42 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
         public async Task<CompanyInfo> GetCompanyInfoAsync()
         {
-            var company = await _context.CompanyInfo.OrderByDescending(c => c.CompanyInfoId).FirstOrDefaultAsync();
+            var company = await _context.CompanyInfo.AsNoTracking().OrderByDescending(c => c.CompanyInfoId).FirstOrDefaultAsync();
             if (company == null)
             {
-                company = new CompanyInfo
+                var newCompany = new CompanyInfo
                 {
-                    CompanyName = "Luarca Web Solutions & Technologies",
-                    Tagline = "Building Modern, Scalable, and Dynamic Enterprise Web Applications",
-                    AboutDescription = "Specializing in enterprise web architecture, ASP.NET Core MVC, Entity Framework Core, and modern MS SQL systems.",
-                    Mission = "Deliver high-performance, robust, and clean digital experiences.",
-                    Vision = "Empower businesses and clients with modern, reliable software.",
+                    CompanyName = "Luarca Web Solutions",
+                    Tagline = "Building High Quality Web Applications",
+                    AboutDescription = "We create clean, secure, and easy-to-use web applications using ASP.NET Core MVC, Entity Framework, and SQL Server.",
+                    Mission = "To build reliable, practical software that helps users and businesses get work done efficiently.",
+                    Vision = "To deliver well-designed web applications that are simple to use and easy to maintain.",
                     LastModifiedDate = DateTime.Now
                 };
-                _context.CompanyInfo.Add(company);
+                _context.CompanyInfo.Add(newCompany);
                 await _context.SaveChangesAsync();
+                return newCompany;
             }
             return company;
         }
 
         public async Task<bool> UpdateCompanyInfoAsync(CompanyInfo model, int adminUserId, string? ipAddress)
         {
-            var existing = await _context.CompanyInfo.FindAsync(model.CompanyInfoId);
+            CompanyInfo? existing = null;
+            if (model.CompanyInfoId > 0)
+            {
+                existing = await _context.CompanyInfo.FindAsync(model.CompanyInfoId);
+            }
+
+            // Fallback to latest record if ID was not matched to prevent duplicate insertion
             if (existing == null)
             {
-                existing = new CompanyInfo();
-                _context.CompanyInfo.Add(existing);
+                existing = await _context.CompanyInfo.OrderByDescending(c => c.CompanyInfoId).FirstOrDefaultAsync();
+                if (existing == null)
+                {
+                    existing = new CompanyInfo();
+                    _context.CompanyInfo.Add(existing);
+                }
             }
 
             existing.CompanyName = model.CompanyName.Trim();
@@ -67,7 +78,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
         public async Task<List<ProductService>> GetProductsServicesAsync(bool activeOnly = false)
         {
-            var query = _context.ProductServices.AsQueryable();
+            var query = _context.ProductServices.AsNoTracking();
             if (activeOnly)
             {
                 query = query.Where(p => p.IsActive);
@@ -118,11 +129,10 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             var item = await _context.ProductServices.FindAsync(id);
             if (item == null) return false;
 
-            // Soft delete by default or remove
             item.IsActive = false;
             await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(adminUserId, "ADMIN_UPDATE_CONTENT", $"Deactivated Product/Service {id} ({item.Title})", ipAddress);
+            await _auditService.LogAsync(adminUserId, "ADMIN_UPDATE_CONTENT", $"Deactivated Product/Service #{id} ({item.Title})", ipAddress);
             return true;
         }
 
@@ -130,31 +140,42 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
         public async Task<ContactInfo> GetContactInfoAsync()
         {
-            var contact = await _context.ContactInfo.OrderByDescending(c => c.ContactInfoId).FirstOrDefaultAsync();
+            var contact = await _context.ContactInfo.AsNoTracking().OrderByDescending(c => c.ContactInfoId).FirstOrDefaultAsync();
             if (contact == null)
             {
-                contact = new ContactInfo
+                var newContact = new ContactInfo
                 {
                     Address = "Cavite, Philippines",
                     ContactNumber = "+63 912 345 6789",
                     Email = "karl.luarca@example.com",
-                    OfficeHours = "Monday - Friday: 9:00 AM - 6:00 PM (PHT)",
+                    OfficeHours = "Monday - Friday: 9:00 AM - 6:00 PM",
                     SocialLinks = "GitHub: github.com/luarca | LinkedIn: linkedin.com/in/karl-luarca",
                     LastModifiedDate = DateTime.Now
                 };
-                _context.ContactInfo.Add(contact);
+                _context.ContactInfo.Add(newContact);
                 await _context.SaveChangesAsync();
+                return newContact;
             }
             return contact;
         }
 
         public async Task<bool> UpdateContactInfoAsync(ContactInfo model, int adminUserId, string? ipAddress)
         {
-            var existing = await _context.ContactInfo.FindAsync(model.ContactInfoId);
+            ContactInfo? existing = null;
+            if (model.ContactInfoId > 0)
+            {
+                existing = await _context.ContactInfo.FindAsync(model.ContactInfoId);
+            }
+
+            // Fallback to latest record if ID was not matched to prevent duplicate insertion
             if (existing == null)
             {
-                existing = new ContactInfo();
-                _context.ContactInfo.Add(existing);
+                existing = await _context.ContactInfo.OrderByDescending(c => c.ContactInfoId).FirstOrDefaultAsync();
+                if (existing == null)
+                {
+                    existing = new ContactInfo();
+                    _context.ContactInfo.Add(existing);
+                }
             }
 
             existing.Address = model.Address?.Trim();
@@ -173,30 +194,41 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
         public async Task<OwnerInfo> GetOwnerInfoAsync()
         {
-            var owner = await _context.OwnerInfo.OrderByDescending(o => o.OwnerInfoId).FirstOrDefaultAsync();
+            var owner = await _context.OwnerInfo.AsNoTracking().OrderByDescending(o => o.OwnerInfoId).FirstOrDefaultAsync();
             if (owner == null)
             {
-                owner = new OwnerInfo
+                var newOwner = new OwnerInfo
                 {
                     FullName = "Karl Ivan B. Luarca",
-                    TitleRole = "Full-Stack Software Engineer & Solutions Architect",
-                    Bio = "Experienced software engineer specializing in ASP.NET Core, Entity Framework Core, SQL Server, and modern full-stack web architectures.",
+                    TitleRole = "Full-Stack Web Developer",
+                    Bio = "A dedicated web developer with experience building applications using C#, ASP.NET Core MVC, and SQL Server.",
                     ProfileImagePath = "/images/avatar.png",
                     LastModifiedDate = DateTime.Now
                 };
-                _context.OwnerInfo.Add(owner);
+                _context.OwnerInfo.Add(newOwner);
                 await _context.SaveChangesAsync();
+                return newOwner;
             }
             return owner;
         }
 
         public async Task<bool> UpdateOwnerInfoAsync(OwnerInfo model, int adminUserId, string? ipAddress)
         {
-            var existing = await _context.OwnerInfo.FindAsync(model.OwnerInfoId);
+            OwnerInfo? existing = null;
+            if (model.OwnerInfoId > 0)
+            {
+                existing = await _context.OwnerInfo.FindAsync(model.OwnerInfoId);
+            }
+
+            // Fallback to latest record if ID was not matched to prevent duplicate insertion
             if (existing == null)
             {
-                existing = new OwnerInfo();
-                _context.OwnerInfo.Add(existing);
+                existing = await _context.OwnerInfo.OrderByDescending(o => o.OwnerInfoId).FirstOrDefaultAsync();
+                if (existing == null)
+                {
+                    existing = new OwnerInfo();
+                    _context.OwnerInfo.Add(existing);
+                }
             }
 
             existing.FullName = model.FullName.Trim();
@@ -215,6 +247,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public async Task<List<Education>> GetEducationAsync()
         {
             return await _context.Education
+                .AsNoTracking()
                 .Where(e => e.IsActive)
                 .OrderBy(e => e.DisplayOrder)
                 .ToListAsync();
@@ -223,6 +256,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public async Task<List<Skill>> GetSkillsAsync()
         {
             return await _context.Skills
+                .AsNoTracking()
                 .Where(s => s.IsActive)
                 .OrderBy(s => s.DisplayOrder)
                 .ToListAsync();
@@ -231,6 +265,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public async Task<List<Hobby>> GetHobbiesAsync()
         {
             return await _context.Hobbies
+                .AsNoTracking()
                 .Where(h => h.IsActive)
                 .OrderBy(h => h.DisplayOrder)
                 .ToListAsync();
@@ -239,6 +274,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public async Task<List<Project>> GetProjectsAsync()
         {
             return await _context.Projects
+                .AsNoTracking()
                 .Where(p => p.IsActive)
                 .OrderBy(p => p.DisplayOrder)
                 .ToListAsync();

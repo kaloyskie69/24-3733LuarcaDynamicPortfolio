@@ -10,7 +10,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Data
     {
         public static async Task InitializeAsync(PersonalWebsiteDbContext context)
         {
-            // Ensure tables for new rubric requirements exist if they were not in the original 01_Schema script
+            // Ensure tables for rubric requirements exist
             await CreateRubricTablesIfNotExistAsync(context);
 
             // 1. Roles
@@ -26,36 +26,36 @@ namespace LuarcaDynamicPortfolio.Mvc.Data
             // Read existing PersonalDetails if available
             var personal = await context.PersonalDetails.FirstOrDefaultAsync();
 
-            // 2. Company Info (Rubric Requirement: About the Business/Company)
+            // 2. Company Info (Requirement: About the Business/Company)
             if (!await context.CompanyInfo.AnyAsync())
             {
                 context.CompanyInfo.Add(new CompanyInfo
                 {
-                    CompanyName = "Luarca Web Solutions & Technologies",
-                    Tagline = "Building Modern, Scalable, and Dynamic Enterprise Web Applications",
-                    AboutDescription = "Luarca Web Solutions is a technology firm dedicated to architecting clean, secure, and data-driven web platforms using modern ASP.NET Core, Entity Framework, and MS SQL Server technologies.",
-                    Mission = "To provide high-quality, maintainable, and robust digital solutions that solve real-world problems and empower businesses through technology.",
-                    Vision = "To be recognized as a premier software development partner trusted for performance, modern engineering, and clean architecture.",
+                    CompanyName = "Luarca Web Solutions",
+                    Tagline = "Building High Quality Web Applications",
+                    AboutDescription = "We create clean, secure, and easy-to-use web applications using ASP.NET Core MVC, Entity Framework, and SQL Server.",
+                    Mission = "To build reliable, practical software that helps users and businesses get work done efficiently.",
+                    Vision = "To deliver well-designed web applications that are simple to use and easy to maintain.",
                     LastModifiedDate = DateTime.Now
                 });
                 await context.SaveChangesAsync();
             }
 
-            // 3. Owner's Info (Rubric Requirement: Owner's Information)
+            // 3. Owner's Info (Requirement: Owner's Information)
             if (!await context.OwnerInfo.AnyAsync())
             {
                 context.OwnerInfo.Add(new OwnerInfo
                 {
                     FullName = personal?.FullName ?? "Karl Ivan B. Luarca",
-                    TitleRole = "Full-Stack Software Engineer & Solution Architect",
-                    Bio = personal?.Bio ?? "Passionate software engineer experienced in building robust web applications using C#, ASP.NET MVC, Entity Framework Core, MS SQL Server, and modern web design.",
+                    TitleRole = "Full-Stack Web Developer",
+                    Bio = personal?.Bio ?? "A dedicated web developer with experience building applications using C#, ASP.NET Core MVC, and SQL Server.",
                     ProfileImagePath = personal?.ProfileImagePath ?? "/images/avatar.png",
                     LastModifiedDate = DateTime.Now
                 });
                 await context.SaveChangesAsync();
             }
 
-            // 4. Contact Info (Rubric Requirement: Contact Information)
+            // 4. Contact Info (Requirement: Contact Information)
             if (!await context.ContactInfo.AnyAsync())
             {
                 context.ContactInfo.Add(new ContactInfo
@@ -63,17 +63,16 @@ namespace LuarcaDynamicPortfolio.Mvc.Data
                     Address = personal?.Address ?? "Cavite, Philippines",
                     ContactNumber = personal?.ContactNumber ?? "+63 912 345 6789",
                     Email = personal?.Email ?? "karl.luarca@example.com",
-                    OfficeHours = "Monday - Friday: 9:00 AM - 6:00 PM (PHT)",
+                    OfficeHours = "Monday - Friday: 9:00 AM - 6:00 PM",
                     SocialLinks = "GitHub: github.com/luarca | LinkedIn: linkedin.com/in/karl-luarca",
                     LastModifiedDate = DateTime.Now
                 });
                 await context.SaveChangesAsync();
             }
 
-            // 5. Products and Services (Rubric Requirement: Product and Services)
+            // 5. Products and Services (Requirement: Product and Services)
             if (!await context.ProductServices.AnyAsync())
             {
-                // Also check if there are projects to port over
                 var existingProjects = await context.Projects.ToListAsync();
                 if (existingProjects.Any())
                 {
@@ -84,7 +83,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Data
                         {
                             Title = proj.Title,
                             Description = proj.Description,
-                            Category = "Software Solution",
+                            Category = "Project",
                             Tags = proj.TechTags,
                             DisplayOrder = order++,
                             IsActive = proj.IsActive
@@ -96,37 +95,37 @@ namespace LuarcaDynamicPortfolio.Mvc.Data
                     context.ProductServices.AddRange(
                         new ProductService
                         {
-                            Title = "Custom Web Application Development",
-                            Description = "End-to-end bespoke web systems built on ASP.NET Core MVC with secure role-based access control and high-performance MS SQL data layers.",
+                            Title = "Web Application Development",
+                            Description = "Custom web applications built with user login, database management, and responsive design.",
                             Category = "Service",
-                            Tags = "ASP.NET Core, C#, MS SQL Server, MVC",
+                            Tags = "ASP.NET Core, C#, SQL Server",
                             DisplayOrder = 1,
                             IsActive = true
                         },
                         new ProductService
                         {
-                            Title = "Database Architecture & Optimization",
-                            Description = "Relational database modeling, query tuning, indexing, and Entity Framework Core ORM mapping for maximum throughput.",
+                            Title = "Database Design & Setup",
+                            Description = "Database modeling, tables, queries, and Entity Framework data access.",
                             Category = "Service",
-                            Tags = "MS SQL Server, EF Core, Database Design",
+                            Tags = "SQL Server, Entity Framework",
                             DisplayOrder = 2,
                             IsActive = true
                         },
                         new ProductService
                         {
-                            Title = "Enterprise Task Manager System",
-                            Description = "A production-grade task management and workflow tracking platform with real-time state management and audit logging.",
+                            Title = "Task Manager App",
+                            Description = "An app for organizing and tracking daily tasks with deadlines and priorities.",
                             Category = "Product",
-                            Tags = "C#, Web Application, Workflow",
+                            Tags = "Web App, C#, SQL",
                             DisplayOrder = 3,
                             IsActive = true
                         },
                         new ProductService
                         {
-                            Title = "Financial Budget Tracker Dashboard",
-                            Description = "Interactive financial tracking and expenditure analytics portal with interactive charts and reporting.",
+                            Title = "Budget Tracker",
+                            Description = "A dashboard to help users monitor income, expenses, and savings.",
                             Category = "Product",
-                            Tags = "Dashboard, Analytics, Charts",
+                            Tags = "Dashboard, Reports",
                             DisplayOrder = 4,
                             IsActive = true
                         }
@@ -201,7 +200,7 @@ END
             }
             catch
             {
-                // If tables already exist or db connection is in memory/offline, continue gracefully
+                // Continue if already exists or offline
             }
         }
     }

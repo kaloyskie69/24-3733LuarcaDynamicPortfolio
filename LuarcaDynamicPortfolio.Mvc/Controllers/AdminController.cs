@@ -66,12 +66,19 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
         public async Task<IActionResult> ToggleUserStatus(int userId, bool isActive)
         {
             var adminId = GetCurrentAdminId();
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
+            // Safety: Admin cannot deactivate their own account
+            if (userId == adminId && !isActive)
+            {
+                TempData["ErrorMessage"] = "You cannot deactivate your own administrator account.";
+                return RedirectToAction("Index", new { activeTab = "users" });
+            }
+
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             var success = await _userService.SetUserActiveStatusAsync(userId, isActive, adminId, ip);
             if (success)
             {
-                TempData["SuccessMessage"] = $"User status has been successfully set to {(isActive ? "Active" : "Inactive")}.";
+                TempData["SuccessMessage"] = $"User status has been updated to {(isActive ? "Active" : "Inactive")}.";
             }
             else
             {
@@ -86,22 +93,22 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
         public async Task<IActionResult> DeleteUser(int userId)
         {
             var adminId = GetCurrentAdminId();
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
             if (userId == adminId)
             {
-                TempData["ErrorMessage"] = "You cannot delete your own administrative account.";
+                TempData["ErrorMessage"] = "You cannot delete your own administrator account.";
                 return RedirectToAction("Index", new { activeTab = "users" });
             }
 
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             var success = await _userService.DeleteUserAsync(userId, adminId, ip);
             if (success)
             {
-                TempData["SuccessMessage"] = "User account has been removed from the database.";
+                TempData["SuccessMessage"] = "User account has been successfully deleted.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Could not delete user.";
+                TempData["ErrorMessage"] = "Could not delete user account.";
             }
 
             return RedirectToAction("Index", new { activeTab = "users" });
@@ -124,7 +131,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
             await _contentService.UpdateCompanyInfoAsync(model, adminId, ip);
-            TempData["SuccessMessage"] = "About Business/Company content updated successfully!";
+            TempData["SuccessMessage"] = "Company information updated successfully!";
 
             return RedirectToAction("Index", new { activeTab = "content-company" });
         }
@@ -157,7 +164,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
             await _contentService.DeleteProductServiceAsync(id, adminId, ip);
-            TempData["SuccessMessage"] = "Product/Service removed successfully!";
+            TempData["SuccessMessage"] = "Product/Service deleted successfully!";
 
             return RedirectToAction("Index", new { activeTab = "content-products" });
         }

@@ -7,6 +7,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
     /// <summary>
     /// PBKDF2 password hashing implementation strictly compatible with the legacy Web Forms
     /// PasswordHelper (100,000 iterations, 16-byte salt, 32-byte hash, SHA-256).
+    /// Optimized with hardware-accelerated constant-time comparison and zero-allocation RNG.
     /// </summary>
     public class Pbkdf2PasswordHasherService : IPasswordHasherService
     {
@@ -17,10 +18,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public void CreatePasswordHash(string plainPassword, out string hash, out string salt)
         {
             byte[] saltBytes = new byte[SaltSize];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(saltBytes);
-            }
+            RandomNumberGenerator.Fill(saltBytes); // Zero-allocation, cryptographically secure
 
             byte[] hashBytes = HashPassword(plainPassword, saltBytes);
 
@@ -34,38 +32,27 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 return false;
 
             byte[] saltBytes;
+            byte[] storedHashBytes;
             try
             {
                 saltBytes = Convert.FromBase64String(storedSalt);
+                storedHashBytes = Convert.FromBase64String(storedHash);
             }
             catch
             {
                 return false;
             }
 
-            byte[] computedHash = HashPassword(plainPassword, saltBytes);
-            string computedHashStr = Convert.ToBase64String(computedHash);
+            byte[] computedHashBytes = HashPassword(plainPassword, saltBytes);
 
-            return SlowEquals(computedHashStr, storedHash);
+            // Hardware constant-time equality check to prevent timing attacks
+            return CryptographicOperations.FixedTimeEquals(computedHashBytes, storedHashBytes);
         }
 
         private static byte[] HashPassword(string password, byte[] salt)
         {
-            using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))
-            {
-                return pbkdf2.GetBytes(HashSize);
-            }
-        }
-
-        private static bool SlowEquals(string a, string b)
-        {
-            if (a.Length != b.Length) return false;
-            int diff = 0;
-            for (int i = 0; i < a.Length; i++)
-            {
-                diff |= a[i] ^ b[i];
-            }
-            return diff == 0;
+            using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+            return pbkdf2.GetBytes(HashSize);
         }
     }
 }

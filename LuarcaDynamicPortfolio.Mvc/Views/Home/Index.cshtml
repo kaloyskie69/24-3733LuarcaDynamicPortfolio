@@ -1,74 +1,70 @@
 @model LuarcaDynamicPortfolio.Mvc.Models.ViewModels.Home.DynamicWebsiteViewModel
 
 @{
-    ViewData["Title"] = "Dynamic Portfolio & Solutions";
+    ViewData["Title"] = "Home";
 }
 
-<!-- Page Header & Greeting -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-    <div>
-        <h3 class="page-title mb-1">
-            Welcome, <span class="text-primary fw-bold">@Model.CurrentUserName</span>!
-        </h3>
-        <p class="page-subtitle text-muted mb-0">
-            Dynamic content loaded directly from MS SQL Server using Entity Framework Core.
-        </p>
-    </div>
-    @if (User.IsInRole("Admin"))
-    {
-        <div class="mt-2 mt-md-0">
-            <a asp-controller="Admin" asp-action="Index" class="btn btn-warning btn-sm shadow-sm">
-                <i class="bi bi-pencil-square me-1"></i> Edit Website Content
-            </a>
+<!-- Welcome Header -->
+<header class="editorial-masthead">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+        <div>
+            <span class="overline overline-accent">WELCOME</span>
+            <h1 class="display-title mb-0">HELLO, @Model.CurrentUserName.ToUpper()!</h1>
         </div>
-    }
-</div>
-
-<!-- ==================== RUBRIC SECTION A: ABOUT THE BUSINESS / COMPANY ==================== -->
-<section id="about-company" class="mb-5">
-    <div class="card shadow-sm border-primary">
-        <div class="card-header section-header d-flex justify-content-between align-items-center bg-dark">
+        @if (User.IsInRole("Admin"))
+        {
             <div>
-                <span class="badge bg-primary me-2">Requirement A</span>
-                <span class="fw-bold"><i class="bi bi-building me-2"></i> About the Business / Company</span>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-pencil me-1"></i> Edit Content
+                </a>
             </div>
-            <small class="text-muted">Dynamic Content</small>
-        </div>
-        <div class="card-body p-4">
-            <div class="row align-items-center mb-4">
-                <div class="col-lg-8">
-                    <h2 class="fw-bold mb-2 text-light">@Model.Company.CompanyName</h2>
-                    <p class="lead text-primary mb-3">@Model.Company.Tagline</p>
-                    <p class="text-secondary mb-0">@Model.Company.AboutDescription</p>
-                </div>
-                <div class="col-lg-4 text-center mt-3 mt-lg-0">
-                    <div class="p-4 rounded-3 bg-dark border border-secondary">
-                        <i class="bi bi-code-slash display-4 text-primary mb-2"></i>
-                        <h6 class="text-light fw-bold mb-1">Enterprise Ready</h6>
-                        <small class="text-muted">ASP.NET Core MVC &bull; EF Core &bull; SQL Server</small>
-                    </div>
-                </div>
-            </div>
+        }
+    </div>
+    
+    <div class="d-flex flex-wrap justify-content-between align-items-center border-top border-bottom border-dark py-2">
+        <span class="caption-text text-uppercase">
+            Browse our company information, products, services, and contact details below.
+        </span>
+    </div>
+</header>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="card h-100 bg-dark border-secondary">
-                        <div class="card-body">
-                            <h5 class="card-title text-info mb-2">
-                                <i class="bi bi-compass me-2"></i> Our Mission
-                            </h5>
-                            <p class="card-text text-muted mb-0">@Model.Company.Mission</p>
-                        </div>
-                    </div>
+<!-- ==================== SECTION A: ABOUT THE BUSINESS / COMPANY ==================== -->
+<section id="company" class="mb-5">
+    <div class="row g-4 align-items-stretch">
+        <div class="col-lg-8">
+            <div class="card card-elevated h-100 p-4">
+                <span class="overline">ABOUT THE BUSINESS</span>
+                <h2 class="headline-title mt-1 mb-2">@Model.Company.CompanyName</h2>
+                <p class="body-large fw-semibold text-dark mb-4">@Model.Company.Tagline</p>
+                
+                <p class="mb-4">@Model.Company.AboutDescription</p>
+
+                @if (!string.IsNullOrEmpty(Model.Company.Mission))
+                {
+                    <blockquote class="pull-quote">
+                        "@Model.Company.Mission"
+                        <span class="pull-quote-source">&mdash; Our Mission</span>
+                    </blockquote>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="editorial-border-box h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="overline">OUR VISION</span>
+                    <h3 class="subhead-title mt-1 mb-3">LOOKING FORWARD</h3>
+                    <p class="body-small mb-4">@Model.Company.Vision</p>
                 </div>
-                <div class="col-md-6">
-                    <div class="card h-100 bg-dark border-secondary">
-                        <div class="card-body">
-                            <h5 class="card-title text-success mb-2">
-                                <i class="bi bi-eye me-2"></i> Our Vision
-                            </h5>
-                            <p class="card-text text-muted mb-0">@Model.Company.Vision</p>
-                        </div>
+
+                <div class="border-top border-dark pt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="caption-text fw-bold text-uppercase">Type</span>
+                        <span class="badge bg-primary">Web Solutions</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="caption-text fw-bold text-uppercase">Platform</span>
+                        <span class="badge bg-secondary">ASP.NET Core</span>
                     </div>
                 </div>
             </div>
@@ -76,207 +72,176 @@
     </div>
 </section>
 
-<!-- ==================== RUBRIC SECTION B: PRODUCTS AND SERVICES ==================== -->
+<!-- ==================== SECTION B: PRODUCTS AND SERVICES ==================== -->
 <section id="products-services" class="mb-5">
-    <div class="card shadow-sm border-info">
-        <div class="card-header section-header d-flex justify-content-between align-items-center bg-dark">
-            <div>
-                <span class="badge bg-info text-dark me-2">Requirement B</span>
-                <span class="fw-bold"><i class="bi bi-grid-3x3-gap-fill me-2"></i> Products and Services</span>
-            </div>
-            <small class="text-muted">@Model.ProductsServices.Count Active Offerings</small>
+    <div class="d-flex justify-content-between align-items-end border-bottom border-dark pb-2 mb-4">
+        <div>
+            <span class="overline overline-accent">WHAT WE OFFER</span>
+            <h2 class="headline-title mb-0">PRODUCTS &amp; SERVICES</h2>
         </div>
-        <div class="card-body p-4">
-            <div class="row g-4">
-                @if (Model.ProductsServices.Any())
-                {
-                    @foreach (var item in Model.ProductsServices)
-                    {
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card h-100 bg-dark border-secondary shadow-sm">
-                                <div class="card-body d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge @(item.Category == "Product" ? "bg-warning text-dark" : "bg-primary")">
-                                            @item.Category
-                                        </span>
-                                        <small class="text-muted">#@item.DisplayOrder</small>
-                                    </div>
-                                    <h5 class="card-title text-light fw-bold mt-1">@item.Title</h5>
-                                    <p class="card-text text-secondary small flex-grow-1">@item.Description</p>
-                                    
-                                    @if (!string.IsNullOrEmpty(item.Tags))
-                                    {
-                                        <div class="mb-3">
-                                            @foreach (var tag in item.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                                            {
-                                                <span class="badge bg-secondary me-1 mb-1 small">@tag.Trim()</span>
-                                            }
-                                        </div>
-                                    }
+        <span class="caption-text text-uppercase fw-bold">@Model.ProductsServices.Count Items</span>
+    </div>
 
-                                    @if (!string.IsNullOrEmpty(item.ActionUrl))
+    <div class="row g-4">
+        @if (Model.ProductsServices.Any())
+        {
+            @foreach (var item in Model.ProductsServices)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="overline mb-0">#@item.DisplayOrder</span>
+                                <span class="badge @(item.Category == "Product" ? "bg-warning" : "bg-primary")">
+                                    @item.Category
+                                </span>
+                            </div>
+
+                            <h3 class="subhead-title mt-2 mb-2">@item.Title</h3>
+                            <p class="body-small mb-3">@item.Description</p>
+                        </div>
+
+                        <div>
+                            @if (!string.IsNullOrEmpty(item.Tags))
+                            {
+                                <div class="mb-3">
+                                    @foreach (var tag in item.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
                                     {
-                                        <a href="@item.ActionUrl" target="_blank" class="btn btn-outline-primary btn-sm mt-auto">
-                                            <i class="bi bi-box-arrow-up-right me-1"></i> Learn More
-                                        </a>
+                                        <span class="chip mb-1 me-1">@tag.Trim()</span>
                                     }
                                 </div>
-                            </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(item.ActionUrl))
+                            {
+                                <a href="@item.ActionUrl" target="_blank" class="btn btn-secondary btn-sm w-100">
+                                    View Details <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            }
                         </div>
-                    }
-                }
-                else
-                {
-                    <div class="col-12 text-center py-4 text-muted">
-                        <i class="bi bi-inbox fs-2"></i>
-                        <p class="mt-2 mb-0">No active products or services currently listed in the database.</p>
                     </div>
-                }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="p-4 border border-dark text-center">
+                    <p class="mb-0 text-muted">No products or services listed at this time.</p>
+                </div>
             </div>
-        </div>
+        }
     </div>
 </section>
 
-<div class="row g-4 mb-5">
-    <!-- ==================== RUBRIC SECTION D: OWNER'S INFORMATION ==================== -->
-    <div class="col-lg-7">
-        <div class="card h-100 shadow-sm border-success">
-            <div class="card-header section-header d-flex justify-content-between align-items-center bg-dark">
-                <div>
-                    <span class="badge bg-success me-2">Requirement D</span>
-                    <span class="fw-bold"><i class="bi bi-person-badge-fill me-2"></i> Owner's Information</span>
+<!-- ==================== SECTIONS D & C: OWNER & CONTACT ==================== -->
+<section class="mb-5">
+    <div class="row g-4">
+        
+        <!-- SECTION D: OWNER'S INFORMATION -->
+        <div class="col-lg-7">
+            <div class="card p-4 h-100">
+                <div class="border-bottom border-dark pb-3 mb-4">
+                    <span class="overline overline-accent">MEET THE OWNER</span>
+                    <h2 class="headline-title mb-0">OWNER INFORMATION</h2>
                 </div>
-                <small class="text-muted">Dynamic Content</small>
-            </div>
-            <div class="card-body p-4">
+
                 <div class="d-flex align-items-center gap-3 mb-4">
                     @{
                         var ownerInitial = !string.IsNullOrEmpty(Model.Owner.FullName) ? Model.Owner.FullName.Substring(0, 1).ToUpper() : "K";
                     }
-                    <span class="account-avatar profile-avatar bg-primary text-white fs-3 d-inline-flex justify-content-center align-items-center rounded-circle" style="width: 64px; height: 64px;">
+                    <div class="author-avatar" style="width: 64px; height: 64px; font-size: 24px; border-width: 3px;">
                         @ownerInitial
-                    </span>
+                    </div>
                     <div>
-                        <h4 class="mb-0 fw-bold text-light">@Model.Owner.FullName</h4>
-                        <span class="text-success fw-semibold">@Model.Owner.TitleRole</span>
+                        <h3 class="subhead-title mb-1">@Model.Owner.FullName</h3>
+                        <span class="badge bg-primary">@Model.Owner.TitleRole</span>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <h6 class="text-muted text-uppercase small fw-bold">Biography</h6>
-                    <p class="text-secondary mb-0">@Model.Owner.Bio</p>
+                    <span class="overline">ABOUT ME</span>
+                    <p class="body-large mb-0">@Model.Owner.Bio</p>
                 </div>
 
-                <!-- Education & Skills Portfolio Highlights -->
                 @if (Model.EducationList.Any())
                 {
-                    <div class="mb-4">
-                        <h6 class="text-muted text-uppercase small fw-bold mb-3">Education & Credentials</h6>
-                        @foreach (var edu in Model.EducationList)
-                        {
-                            <div class="mb-2 border-start border-3 border-success ps-3">
-                                <div class="fw-semibold text-light">@edu.Level &bull; @edu.SchoolName</div>
-                                @if (!string.IsNullOrEmpty(edu.Course))
-                                {
-                                    <div class="text-muted small">@edu.Course</div>
-                                }
-                                <div class="text-muted small">@edu.YearFrom - @edu.YearTo</div>
-                            </div>
-                        }
+                    <div class="mb-4 pt-3 border-top border-dark">
+                        <span class="overline">EDUCATION</span>
+                        <div class="mt-2">
+                            @foreach (var edu in Model.EducationList)
+                            {
+                                <div class="mb-2 pb-2 border-bottom border-light">
+                                    <div class="fw-bold text-dark text-uppercase">@edu.Level &bull; @edu.SchoolName</div>
+                                    @if (!string.IsNullOrEmpty(edu.Course))
+                                    {
+                                        <div class="caption-text">@edu.Course</div>
+                                    }
+                                    <div class="caption-text text-muted">@edu.YearFrom &mdash; @edu.YearTo</div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 }
 
                 @if (Model.SkillsList.Any())
                 {
-                    <div>
-                        <h6 class="text-muted text-uppercase small fw-bold mb-2">Technical Skills</h6>
-                        <div class="d-flex flex-wrap gap-2">
+                    <div class="pt-3 border-top border-dark">
+                        <span class="overline">SKILLS</span>
+                        <div class="d-flex flex-wrap gap-1 mt-2">
                             @foreach (var skill in Model.SkillsList)
                             {
-                                <span class="badge bg-dark border border-secondary text-light px-2 py-1">
-                                    <i class="bi bi-check2 text-success me-1"></i> @skill.SkillName
-                                </span>
+                                <span class="chip">@skill.SkillName</span>
                             }
                         </div>
                     </div>
                 }
             </div>
         </div>
-    </div>
 
-    <!-- ==================== RUBRIC SECTION C: CONTACT INFORMATION ==================== -->
-    <div class="col-lg-5">
-        <div class="card h-100 shadow-sm border-warning">
-            <div class="card-header section-header d-flex justify-content-between align-items-center bg-dark">
+        <!-- SECTION C: CONTACT INFORMATION -->
+        <div class="col-lg-5">
+            <div class="editorial-border-box h-100 d-flex flex-column justify-content-between">
                 <div>
-                    <span class="badge bg-warning text-dark me-2">Requirement C</span>
-                    <span class="fw-bold"><i class="bi bi-telephone-fill me-2"></i> Contact Information</span>
-                </div>
-                <small class="text-muted">Dynamic Content</small>
-            </div>
-            <div class="card-body p-4 d-flex flex-column justify-content-between">
-                <div>
+                    <div class="border-bottom border-dark pb-3 mb-4">
+                        <span class="overline overline-accent">GET IN TOUCH</span>
+                        <h2 class="headline-title mb-0">CONTACT INFORMATION</h2>
+                    </div>
+
                     <ul class="list-unstyled mb-4">
-                        <li class="mb-3 d-flex align-items-start gap-3">
-                            <span class="p-2 bg-dark rounded border border-secondary text-primary">
-                                <i class="bi bi-geo-alt-fill fs-5"></i>
-                            </span>
-                            <div>
-                                <small class="text-muted d-block">Physical Address</small>
-                                <span class="fw-semibold text-light">@Model.Contact.Address</span>
-                            </div>
+                        <li class="py-3 border-bottom border-dark">
+                            <span class="overline d-block mb-1">ADDRESS</span>
+                            <span class="fw-bold fs-6">@Model.Contact.Address</span>
                         </li>
-                        <li class="mb-3 d-flex align-items-start gap-3">
-                            <span class="p-2 bg-dark rounded border border-secondary text-success">
-                                <i class="bi bi-telephone-fill fs-5"></i>
-                            </span>
-                            <div>
-                                <small class="text-muted d-block">Contact Number</small>
-                                <span class="fw-semibold text-light">@Model.Contact.ContactNumber</span>
-                            </div>
+                        <li class="py-3 border-bottom border-dark">
+                            <span class="overline d-block mb-1">PHONE NUMBER</span>
+                            <span class="fw-bold fs-6">@Model.Contact.ContactNumber</span>
                         </li>
-                        <li class="mb-3 d-flex align-items-start gap-3">
-                            <span class="p-2 bg-dark rounded border border-secondary text-info">
-                                <i class="bi bi-envelope-fill fs-5"></i>
-                            </span>
-                            <div>
-                                <small class="text-muted d-block">Email Address</small>
-                                <span class="fw-semibold text-light">@Model.Contact.Email</span>
-                            </div>
+                        <li class="py-3 border-bottom border-dark">
+                            <span class="overline d-block mb-1">EMAIL ADDRESS</span>
+                            <span class="fw-bold fs-6 text-break">@Model.Contact.Email</span>
                         </li>
-                        <li class="mb-3 d-flex align-items-start gap-3">
-                            <span class="p-2 bg-dark rounded border border-secondary text-warning">
-                                <i class="bi bi-clock-fill fs-5"></i>
-                            </span>
-                            <div>
-                                <small class="text-muted d-block">Office Hours</small>
-                                <span class="fw-semibold text-light">@Model.Contact.OfficeHours</span>
-                            </div>
+                        <li class="py-3 border-bottom border-dark">
+                            <span class="overline d-block mb-1">OFFICE HOURS</span>
+                            <span class="fw-bold fs-6">@Model.Contact.OfficeHours</span>
                         </li>
                         @if (!string.IsNullOrEmpty(Model.Contact.SocialLinks))
                         {
-                            <li class="d-flex align-items-start gap-3">
-                                <span class="p-2 bg-dark rounded border border-secondary text-secondary">
-                                    <i class="bi bi-share-fill fs-5"></i>
-                                </span>
-                                <div>
-                                    <small class="text-muted d-block">Channels & Links</small>
-                                    <span class="text-light small">@Model.Contact.SocialLinks</span>
-                                </div>
+                            <li class="py-3">
+                                <span class="overline d-block mb-1">LINKS</span>
+                                <span class="body-small text-dark fw-semibold">@Model.Contact.SocialLinks</span>
                             </li>
                         }
                     </ul>
                 </div>
 
-                <!-- Interactive Inquiry Box -->
-                <div class="p-3 rounded bg-dark border border-secondary text-center mt-3">
-                    <h6 class="text-light mb-1">Have a project in mind?</h6>
-                    <p class="text-muted small mb-3">Feel free to reach out directly through any of our contact channels.</p>
-                    <a href="mailto:@Model.Contact.Email" class="btn btn-primary btn-sm w-100">
-                        <i class="bi bi-send-fill me-1"></i> Send Direct Email
+                <div class="mt-4 pt-3 border-top border-dark">
+                    <a href="mailto:@Model.Contact.Email" class="btn btn-primary w-100 btn-lg">
+                        <i class="bi bi-envelope-fill me-1"></i> Send an Email
                     </a>
                 </div>
             </div>
         </div>
+
     </div>
-</div>
+</section>

@@ -1,55 +1,47 @@
 # ASP.NET Core MVC + Entity Framework Core + MS SQL Project
-## Dynamic Portfolio & Solutions Web Application
+## Karl Ivan Luarca — Personal & Business Dynamic Website
 
-This project has been upgraded to **ASP.NET Core MVC** with **Entity Framework Core (EF Core)** and **MS SQL Server**, satisfying all requirements specified in the project rubric.
+This web application is built with **ASP.NET Core MVC (.NET 8.0)**, **Entity Framework Core**, and **MS SQL Server**, styled with a clean, high-contrast black-and-white theme.
 
 ---
 
 ## 1. Quick Start
 
-### Option A: Using Visual Studio 2022
-1. Double-click **`LuarcaDynamicPortfolio.sln`** in this folder to open the project in Visual Studio.
-2. Ensure your local SQL Server instance is running (`PersonalWebsiteDB` created).
-3. Check the connection string in `LuarcaDynamicPortfolio.Mvc/appsettings.json`:
+### Running in Visual Studio 2022
+1. Open **`LuarcaDynamicPortfolio.sln`** in Visual Studio 2022.
+2. Check your database connection string in `LuarcaDynamicPortfolio.Mvc/appsettings.json`:
    ```json
    "ConnectionStrings": {
      "PersonalWebsiteDB": "Data Source=.;Initial Catalog=PersonalWebsiteDB;Integrated Security=True;TrustServerCertificate=True;"
    }
    ```
-4. Press **F5** (or Ctrl+F5) to launch the web application.
+3. Press **F5** (or Ctrl+F5) to run the application.
 
-### Option B: Using .NET CLI / Terminal
-Open PowerShell in this directory and run:
+### Running from the Terminal
 ```powershell
 dotnet run --project LuarcaDynamicPortfolio.Mvc
 ```
-Open your browser to the URL displayed in the terminal (typically `https://localhost:7198` or `http://localhost:5242`).
+Open your browser to the local URL shown in the terminal (e.g. `https://localhost:7198`).
 
 ---
 
-## 2. Rubric Compliance & Feature Verification
+## 2. Key Features
 
-| Rubric Requirement | Implementation Detail | Location |
+| Requirement | Description | How to Test |
 |---|---|---|
-| **a. User: Sign-In first before viewing website** | Enforced via `[Authorize]` filter on `HomeController`. Unauthenticated visitors are automatically redirected to the Sign-In page. | `HomeController.cs`, `Views/Account/Login.cshtml` |
-| **b. User: Sign-Up if not in database** | Self-service registration with validation and PBKDF2 password hashing. New users default to Role = `User`. | `AccountController.cs`, `Views/Account/Register.cshtml` |
-| **c. User: Modify his/her own information** | Dedicated profile management allowing users to update Full Name, Email, and Change Password with live feedback. | `ProfileController.cs`, `Views/Profile/Index.cshtml` |
-| **d. Admin: View-only users information** | Admin dashboard displays a clean, read-only table of all user accounts (ID, Username, Full Name, Email, Role, Registration Date). | `AdminController.cs`, `Views/Admin/Index.cshtml` |
-| **e. Admin: Remove users or tag as inactive** | Inactive toggle button deactivates account (blocks login); Delete button removes account with safety checks. | `AdminController.ToggleUserStatus`, `AdminController.DeleteUser` |
-| **f. Admin: View statistic reports** | Cards displaying Total Users, Active, Inactive, Admins, Regular Users, and 7-Day Signups, plus Recent Audit Logs. | `AdminController.Index` (Statistic Reports tab) |
-| **g. Admin: Modify website content** | Full management forms to update Company Info, Products/Services, Contact Details, and Owner's Info. | `AdminController.Index` (Content Editor tab) |
-| **Website Content a: About Business/Company** | Dynamic company name, tagline, description, mission, and vision rendered from MS SQL. | `Views/Home/Index.cshtml` (Section A) |
-| **Website Content b: Products and Services** | Dynamic catalog of products and services with category badges, tech tags, and order controls. | `Views/Home/Index.cshtml` (Section B) |
-| **Website Content c: Contact Information** | Dynamic address, phone, email, office hours, social links, and direct inquiry link. | `Views/Home/Index.cshtml` (Section C) |
-| **Website Content d: Owner's Information** | Dynamic owner name, professional role, biography, credentials, and skills. | `Views/Home/Index.cshtml` (Section D) |
+| **User Sign-In** | Users must sign in first before viewing the website. | Visit the home page while signed out; you will be redirected to the Sign In page. |
+| **User Sign-Up** | New users can create an account if one does not exist. | Click "Sign up here" on the Sign In page and fill out the registration form. |
+| **Modify Profile** | Users can update their full name, email, and password. | Click your name in the top navbar and select "My Profile". |
+| **View-Only User List (Admin)** | Admins can view all registered users. | Go to Admin Panel &rarr; Users tab. |
+| **Activate / Deactivate Users** | Admins can turn accounts on or off, or delete them. | Use the "Activate", "Deactivate", or "Delete" buttons in the Users tab. |
+| **Statistics** | Admins can view user counts, signup numbers, and recent activity. | Go to Admin Panel &rarr; Statistics tab. |
+| **Dynamic Website Content** | Admins can edit company info, products/services, contact details, and owner info. | Go to Admin Panel &rarr; Edit Website Content tab. |
 
 ---
 
-## 3. Technology Stack
+## 3. Dynamic Website Content Sections
 
-- **Runtime & Framework:** ASP.NET Core MVC (.NET 8.0)
-- **Data Access:** Entity Framework Core (`Microsoft.EntityFrameworkCore.SqlServer` 8.0.11)
-- **Database Engine:** Microsoft SQL Server (`PersonalWebsiteDB`)
-- **Authentication:** Cookie Authentication with Claims (`ClaimsPrincipal`, `[Authorize]`, `[Authorize(Roles = "Admin")]`)
-- **Security:** PBKDF2 with SHA-256 and 100,000 iterations (100% backward compatible with existing user password hashes)
-- **Styling:** Bootstrap 5.3 Dark Mode + Custom responsive CSS
+- **Section A: About the Business / Company** &mdash; Displays company name, tagline, description, mission, and vision.
+- **Section B: Products and Services** &mdash; Displays active products and services with categories and tags.
+- **Section C: Contact Information** &mdash; Displays address, phone number, email, and office hours.
+- **Section D: Owner's Information** &mdash; Displays the owner's name, role, biography, education, and skills.

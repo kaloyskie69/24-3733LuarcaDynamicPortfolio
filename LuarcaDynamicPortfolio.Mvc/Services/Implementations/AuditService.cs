@@ -19,12 +19,25 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         {
             try
             {
+                // Guard maximum column lengths to guarantee zero database truncation crashes
+                var safeActionType = !string.IsNullOrEmpty(actionType)
+                    ? (actionType.Length > 100 ? actionType.Substring(0, 100) : actionType)
+                    : "UNKNOWN";
+
+                var safeActionDetail = !string.IsNullOrEmpty(actionDetail)
+                    ? (actionDetail.Length > 500 ? actionDetail.Substring(0, 500) : actionDetail)
+                    : null;
+
+                var safeIp = !string.IsNullOrEmpty(ipAddress)
+                    ? (ipAddress.Length > 50 ? ipAddress.Substring(0, 50) : ipAddress)
+                    : null;
+
                 var log = new AuditLog
                 {
                     UserId = userId,
-                    ActionType = actionType,
-                    ActionDetail = actionDetail,
-                    IPAddress = ipAddress,
+                    ActionType = safeActionType,
+                    ActionDetail = safeActionDetail,
+                    IPAddress = safeIp,
                     ActionDate = DateTime.Now
                 };
 
@@ -33,7 +46,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             }
             catch
             {
-                // Never allow audit logging failure to crash an operation
+                // Silently swallow audit logging errors to prevent secondary crashes on main flows
             }
         }
     }

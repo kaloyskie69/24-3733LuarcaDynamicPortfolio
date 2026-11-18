@@ -59,6 +59,8 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
 
             if (!ModelState.IsValid)
             {
+                // Rehydrate read-only fields so view does not show blank username, blank role, or 0001-01-01 date
+                await RehydrateProfileModelAsync(model, userId);
                 ViewBag.PasswordModel = new ChangePasswordViewModel();
                 return View("Index", model);
             }
@@ -68,7 +70,8 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
 
             if (!success)
             {
-                ModelState.AddModelError("Email", "Could not update profile. That email address may already be in use by another user.");
+                ModelState.AddModelError("Email", "That email address is already in use by another account.");
+                await RehydrateProfileModelAsync(model, userId);
                 ViewBag.PasswordModel = new ChangePasswordViewModel();
                 return View("Index", model);
             }
@@ -115,6 +118,18 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
 
             TempData["SuccessMessage"] = "Your password has been changed successfully!";
             return RedirectToAction("Index");
+        }
+
+        private async Task RehydrateProfileModelAsync(UserProfileViewModel model, int userId)
+        {
+            var user = await _userService.GetByIdAsync(userId);
+            if (user != null)
+            {
+                model.Username = user.Username;
+                model.RoleName = user.Role?.RoleName ?? "User";
+                model.DateCreated = user.DateCreated;
+                model.IsActive = user.IsActive;
+            }
         }
     }
 }

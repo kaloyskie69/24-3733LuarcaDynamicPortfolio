@@ -45,7 +45,9 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         {
             var u = username.Trim();
             var e = email.Trim();
-            return await _context.Users.AnyAsync(x => x.Username == u || x.Email == e);
+            return await _context.Users
+                .AsNoTracking()
+                .AnyAsync(x => x.Username == u || x.Email == e);
         }
 
         public async Task<(bool Success, string? Error, User? User)> AuthenticateAsync(string usernameOrEmail, string password)
@@ -67,7 +69,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 return (false, "Invalid username or password.", null);
             }
 
-            // Update LastLogin
+            // Update LastLogin timestamp
             user.LastLogin = DateTime.Now;
             await _context.SaveChangesAsync();
 
@@ -76,12 +78,15 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
         public async Task<(bool Success, string? Error, User? User)> RegisterAsync(RegisterViewModel model, string? ipAddress)
         {
-            if (await _context.Users.AnyAsync(u => u.Username == model.Username.Trim()))
+            var u = model.Username.Trim();
+            var e = model.Email.Trim();
+
+            if (await _context.Users.AsNoTracking().AnyAsync(x => x.Username == u))
             {
                 return (false, "The chosen username is already taken.", null);
             }
 
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email.Trim()))
+            if (await _context.Users.AsNoTracking().AnyAsync(x => x.Email == e))
             {
                 return (false, "An account with this email address already exists.", null);
             }
@@ -90,12 +95,12 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
             var user = new User
             {
-                Username = model.Username.Trim(),
-                Email = model.Email.Trim(),
+                Username = u,
+                Email = e,
                 FullName = model.FullName.Trim(),
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                RoleId = 2, // Regular User
+                RoleId = 2, // Regular User role
                 IsActive = true,
                 DateCreated = DateTime.Now
             };
@@ -103,7 +108,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(user.UserId, "SIGNUP", $"User registered with username '{user.Username}'", ipAddress);
+            await _auditService.LogAsync(user.UserId, "SIGNUP", $"User registered as '{user.Username}'", ipAddress);
 
             return (true, null, user);
         }
@@ -114,14 +119,14 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             if (user == null) return false;
 
             var trimmedEmail = email.Trim();
-            var emailExists = await _context.Users.AnyAsync(u => u.Email == trimmedEmail && u.UserId != userId);
+            var emailExists = await _context.Users.AsNoTracking().AnyAsync(u => u.Email == trimmedEmail && u.UserId != userId);
             if (emailExists) return false;
 
             user.FullName = fullName.Trim();
             user.Email = trimmedEmail;
 
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync(userId, "UPDATE_PROFILE", "User updated their own profile information", ipAddress);
+            await _auditService.LogAsync(userId, "UPDATE_PROFILE", "User updated personal profile information", ipAddress);
 
             return true;
         }
@@ -141,7 +146,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             user.PasswordSalt = newSalt;
 
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync(userId, "CHANGE_PASSWORD", "User successfully changed their password", ipAddress);
+            await _auditService.LogAsync(userId, "CHANGE_PASSWORD", "User successfully changed password", ipAddress);
 
             return (true, null);
         }
@@ -149,6 +154,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Users
+                .AsNoTracking()
                 .Include(u => u.Role)
                 .OrderByDescending(u => u.DateCreated)
                 .ToListAsync();
@@ -156,6 +162,12 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
 
         public async Task<bool> SetUserActiveStatusAsync(int userId, bool isActive, int adminUserId, string? ipAddress)
         {
+            // Safety: Admin cannot deactivate their own account
+            if (userId == adminUserId && !isActive)
+            {
+                return false;
+            }
+
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return false;
 
@@ -163,7 +175,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             await _context.SaveChangesAsync();
 
             await _auditService.LogAsync(adminUserId, "ADMIN_TOGGLE_STATUS",
-                $"Admin set UserId {userId} ({user.Username}) to {(isActive ? "Active" : "Inactive")}", ipAddress);
+                $"Admin set user #{userId} ({user.Username}) to {(isActive ? "Active" : "Inactive")}", ipAddress);
 
             return true;
         }
@@ -173,27 +185,39 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return false;
 
-            // Admin safety: prevent admin from deleting themselves
+            // Safety: Admin cannot delete their own account
             if (userId == adminUserId) return false;
+
+            // Resolve foreign keys before deletion to prevent SQL reference constraint exceptions
+            // 1. Delete associated audit logs (same as sp_Admin_DeleteUser)
+            var logs = await _context.AuditLogs.Where(a => a.UserId == userId).ToListAsync();
+            _context.AuditLogs.RemoveRange(logs);
+
+            // 2. Nullify any PersonalDetails modified by this user
+            var modifiedDetails = await _context.PersonalDetails.Where(p => p.LastModifiedBy == userId).ToListAsync();
+            foreach (var pd in modifiedDetails)
+            {
+                pd.LastModifiedBy = null;
+            }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             await _auditService.LogAsync(adminUserId, "ADMIN_DELETE_USER",
-                $"Admin deleted UserId {userId} ({user.Username})", ipAddress);
+                $"Admin deleted user #{userId} ({user.Username})", ipAddress);
 
             return true;
         }
 
         public async Task<(int Total, int Active, int Inactive, int Admin, int Regular, int Signups7Days)> GetUserStatsAsync()
         {
-            var total = await _context.Users.CountAsync();
-            var active = await _context.Users.CountAsync(u => u.IsActive);
+            var total = await _context.Users.AsNoTracking().CountAsync();
+            var active = await _context.Users.AsNoTracking().CountAsync(u => u.IsActive);
             var inactive = total - active;
-            var admin = await _context.Users.CountAsync(u => u.RoleId == 1);
-            var regular = await _context.Users.CountAsync(u => u.RoleId == 2);
+            var admin = await _context.Users.AsNoTracking().CountAsync(u => u.RoleId == 1);
+            var regular = await _context.Users.AsNoTracking().CountAsync(u => u.RoleId == 2);
             var sevenDaysAgo = DateTime.Now.AddDays(-7);
-            var signups7Days = await _context.Users.CountAsync(u => u.DateCreated >= sevenDaysAgo);
+            var signups7Days = await _context.Users.AsNoTracking().CountAsync(u => u.DateCreated >= sevenDaysAgo);
 
             return (total, active, inactive, admin, regular, signups7Days);
         }
@@ -201,6 +225,7 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
         public async Task<List<AuditLog>> GetRecentActivityAsync(int count = 20)
         {
             return await _context.AuditLogs
+                .AsNoTracking()
                 .Include(a => a.User)
                 .OrderByDescending(a => a.ActionDate)
                 .Take(count)
