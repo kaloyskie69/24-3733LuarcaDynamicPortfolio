@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LuarcaDynamicPortfolio.Mvc")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+243576f9e29bc8a922b599f01d6c1972a58bcb80")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc10e2e820ba508c247497ef590d0e950e1fe39a")]
 [assembly: System.Reflection.AssemblyProductAttribute("LuarcaDynamicPortfolio.Mvc")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LuarcaDynamicPortfolio.Mvc")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
