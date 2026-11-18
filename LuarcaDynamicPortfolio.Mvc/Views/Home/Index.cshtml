@@ -148,7 +148,7 @@
 
                 <div class="d-flex align-items-center gap-3 mb-4">
                     @{
-                        var ownerInitial = !string.IsNullOrEmpty(Model.Owner.FullName) ? Model.Owner.FullName.Substring(0, 1).ToUpper() : "K";
+                        var ownerInitial = !string.IsNullOrWhiteSpace(Model.Owner.FullName) ? Model.Owner.FullName.Trim().Substring(0, 1).ToUpper() : "K";
                     }
                     <div class="author-avatar" style="width: 64px; height: 64px; font-size: 24px; border-width: 3px;">
                         @ownerInitial
@@ -235,11 +235,14 @@
                     </ul>
                 </div>
 
-                <div class="mt-4 pt-3 border-top border-dark">
-                    <a href="mailto:@Model.Contact.Email" class="btn btn-primary w-100 btn-lg">
-                        <i class="bi bi-envelope-fill me-1"></i> Send an Email
-                    </a>
-                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.Contact.Email))
+                {
+                    <div class="mt-4 pt-3 border-top border-dark">
+                        <a href="mailto:@Model.Contact.Email" class="btn btn-primary w-100 btn-lg">
+                            <i class="bi bi-envelope-fill me-1"></i> Send an Email
+                        </a>
+                    </div>
+                }
             </div>
         </div>
 

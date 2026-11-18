@@ -77,9 +77,9 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
 
             TempData["SuccessMessage"] = $"Welcome back, {user.FullName ?? user.Username}!";
 
-            if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+            if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl) && !model.ReturnUrl.StartsWith("//") && !model.ReturnUrl.StartsWith("/\\"))
             {
-                return Redirect(model.ReturnUrl);
+                return LocalRedirect(model.ReturnUrl);
             }
 
             return RedirectToAction("Index", "Home");

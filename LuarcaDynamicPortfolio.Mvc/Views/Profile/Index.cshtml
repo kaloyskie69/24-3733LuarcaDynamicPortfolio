@@ -34,13 +34,13 @@
 
                 <div class="mb-3">
                     <label asp-for="FullName" class="form-label">Full Name</label>
-                    <input asp-for="FullName" class="form-control" placeholder="Your full name" />
+                    <input asp-for="FullName" class="form-control" placeholder="Your full name" maxlength="150" />
                     <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-4">
                     <label asp-for="Email" class="form-label">Email Address</label>
-                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" />
+                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" maxlength="150" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
@@ -75,29 +75,7 @@
                     <h2 class="subhead-title mb-0">CHANGE PASSWORD</h2>
                 </div>
 
-                <form asp-controller="Profile" asp-action="ChangePassword" method="post">
-                    @Html.AntiForgeryToken()
-
-                    <div class="mb-3">
-                        <label for="CurrentPassword" class="form-label">Current Password</label>
-                        <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="NewPassword" class="form-label">New Password</label>
-                        <input type="password" name="NewPassword" id="NewPassword" class="form-control" required />
-                        <span class="caption-text">Must be at least 6 characters.</span>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="ConfirmNewPassword" class="form-label">Confirm New Password</label>
-                        <input type="password" name="ConfirmNewPassword" id="ConfirmNewPassword" class="form-control" required />
-                    </div>
-
-                    <button type="submit" class="btn btn-secondary w-100">
-                        Update Password
-                    </button>
-                </form>
+                <partial name="_ChangePasswordPartial" model="passwordModel" />
             </div>
 
             <div class="border-top border-dark pt-3 mt-4">

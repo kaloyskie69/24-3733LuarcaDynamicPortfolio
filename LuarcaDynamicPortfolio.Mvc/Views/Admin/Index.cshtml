@@ -107,7 +107,8 @@
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="userId" value="@u.UserId" />
                                                 <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Are you sure you want to delete user @u.Username?');">
+                                                        data-username="@u.Username"
+                                                        onclick="return confirm('Are you sure you want to delete user ' + this.getAttribute('data-username') + '?');">
                                                     Delete
                                                 </button>
                                             </form>
@@ -245,27 +246,27 @@
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Company Name</label>
-                                    <input type="text" name="CompanyName" class="form-control" value="@Model.Company.CompanyName" required />
+                                    <input type="text" name="CompanyName" class="form-control" value="@Model.Company.CompanyName" maxlength="150" required />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Tagline</label>
-                                    <input type="text" name="Tagline" class="form-control" value="@Model.Company.Tagline" />
+                                    <input type="text" name="Tagline" class="form-control" value="@Model.Company.Tagline" maxlength="250" />
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">About Description</label>
-                                <textarea name="AboutDescription" class="form-control" rows="3">@Model.Company.AboutDescription</textarea>
+                                <textarea name="AboutDescription" class="form-control" rows="3" maxlength="4000">@Model.Company.AboutDescription</textarea>
                             </div>
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label">Mission</label>
-                                    <textarea name="Mission" class="form-control" rows="2">@Model.Company.Mission</textarea>
+                                    <textarea name="Mission" class="form-control" rows="2" maxlength="2000">@Model.Company.Mission</textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Vision</label>
-                                    <textarea name="Vision" class="form-control" rows="2">@Model.Company.Vision</textarea>
+                                    <textarea name="Vision" class="form-control" rows="2" maxlength="2000">@Model.Company.Vision</textarea>
                                 </div>
                             </div>
 
@@ -297,7 +298,7 @@
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-5">
                                         <label class="form-label">Title / Name</label>
-                                        <input type="text" name="Title" class="form-control" placeholder="e.g. Web Development" required />
+                                        <input type="text" name="Title" class="form-control" placeholder="e.g. Web Development" maxlength="150" required />
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label">Category</label>
@@ -309,18 +310,18 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Tags (Comma Separated)</label>
-                                        <input type="text" name="Tags" class="form-control" placeholder="e.g. C#, ASP.NET, SQL" />
+                                        <input type="text" name="Tags" class="form-control" placeholder="e.g. C#, ASP.NET, SQL" maxlength="300" />
                                     </div>
                                 </div>
 
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-8">
                                         <label class="form-label">Description</label>
-                                        <input type="text" name="Description" class="form-control" placeholder="Brief description..." required />
+                                        <input type="text" name="Description" class="form-control" placeholder="Brief description..." maxlength="500" required />
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label">Display Order</label>
-                                        <input type="number" name="DisplayOrder" class="form-control" value="1" />
+                                        <input type="number" name="DisplayOrder" class="form-control" value="1" min="0" max="9999" />
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
                                         <button type="submit" class="btn btn-primary w-100">
@@ -370,7 +371,8 @@
                                                         @Html.AntiForgeryToken()
                                                         <input type="hidden" name="id" value="@item.ProductServiceId" />
                                                         <button type="submit" class="btn btn-sm btn-danger"
-                                                                onclick="return confirm('Remove @item.Title?');">
+                                                                data-title="@item.Title"
+                                                                onclick="return confirm('Remove ' + this.getAttribute('data-title') + '?');">
                                                             Delete
                                                         </button>
                                                     </form>
@@ -407,28 +409,28 @@
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Address</label>
-                                    <input type="text" name="Address" class="form-control" value="@Model.Contact.Address" />
+                                    <input type="text" name="Address" class="form-control" value="@Model.Contact.Address" maxlength="300" />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Phone Number</label>
-                                    <input type="text" name="ContactNumber" class="form-control" value="@Model.Contact.ContactNumber" />
+                                    <input type="text" name="ContactNumber" class="form-control" value="@Model.Contact.ContactNumber" maxlength="50" />
                                 </div>
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Email Address</label>
-                                    <input type="email" name="Email" class="form-control" value="@Model.Contact.Email" />
+                                    <input type="email" name="Email" class="form-control" value="@Model.Contact.Email" maxlength="150" />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Office Hours</label>
-                                    <input type="text" name="OfficeHours" class="form-control" value="@Model.Contact.OfficeHours" />
+                                    <input type="text" name="OfficeHours" class="form-control" value="@Model.Contact.OfficeHours" maxlength="150" />
                                 </div>
                             </div>
 
                             <div class="mb-4">
                                 <label class="form-label">Links (Social Media / Website)</label>
-                                <input type="text" name="SocialLinks" class="form-control" value="@Model.Contact.SocialLinks" />
+                                <input type="text" name="SocialLinks" class="form-control" value="@Model.Contact.SocialLinks" maxlength="300" />
                             </div>
 
                             <button type="submit" class="btn btn-primary">
@@ -455,22 +457,22 @@
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Full Name</label>
-                                    <input type="text" name="FullName" class="form-control" value="@Model.Owner.FullName" required />
+                                    <input type="text" name="FullName" class="form-control" value="@Model.Owner.FullName" maxlength="150" required />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Title / Role</label>
-                                    <input type="text" name="TitleRole" class="form-control" value="@Model.Owner.TitleRole" />
+                                    <input type="text" name="TitleRole" class="form-control" value="@Model.Owner.TitleRole" maxlength="150" />
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Biography</label>
-                                <textarea name="Bio" class="form-control" rows="4">@Model.Owner.Bio</textarea>
+                                <textarea name="Bio" class="form-control" rows="4" maxlength="4000">@Model.Owner.Bio</textarea>
                             </div>
 
                             <div class="mb-4">
                                 <label class="form-label">Profile Image Path</label>
-                                <input type="text" name="ProfileImagePath" class="form-control" value="@Model.Owner.ProfileImagePath" />
+                                <input type="text" name="ProfileImagePath" class="form-control" value="@Model.Owner.ProfileImagePath" maxlength="300" />
                             </div>
 
                             <button type="submit" class="btn btn-primary">

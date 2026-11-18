@@ -144,3 +144,4 @@ C:\Users\Natalie Caballes\Downloads\LUARCA_Quiz_IPT102\24-3733LuarcaDynamicPortf
 C:\Users\Natalie Caballes\Downloads\LUARCA_Quiz_IPT102\24-3733LuarcaDynamicPortfolio\LuarcaDynamicPortfolio.Mvc\obj\Debug\net8.0\LuarcaDynamicPortfolio.Mvc.pdb
 C:\Users\Natalie Caballes\Downloads\LUARCA_Quiz_IPT102\24-3733LuarcaDynamicPortfolio\LuarcaDynamicPortfolio.Mvc\obj\Debug\net8.0\LuarcaDynamicPortfolio.Mvc.genruntimeconfig.cache
 C:\Users\Natalie Caballes\Downloads\LUARCA_Quiz_IPT102\24-3733LuarcaDynamicPortfolio\LuarcaDynamicPortfolio.Mvc\obj\Debug\net8.0\ref\LuarcaDynamicPortfolio.Mvc.dll
+C:\Users\Natalie Caballes\Downloads\LUARCA_Quiz_IPT102\24-3733LuarcaDynamicPortfolio\LuarcaDynamicPortfolio.Mvc\obj\Debug\net8.0\LuarcaDynamicPortfolio.Mvc.sourcelink.json

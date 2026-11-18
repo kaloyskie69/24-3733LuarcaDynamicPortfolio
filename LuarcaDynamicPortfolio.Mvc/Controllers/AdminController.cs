@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -121,9 +122,10 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateCompany(CompanyInfo model)
         {
-            if (string.IsNullOrWhiteSpace(model.CompanyName))
+            if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Company Name is required.";
+                var error = ModelState.Values.SelectMany(v => v.Errors).FirstOrDefault()?.ErrorMessage;
+                TempData["ErrorMessage"] = error ?? "Please correct the errors in the Company form.";
                 return RedirectToAction("Index", new { activeTab = "content-company" });
             }
 
@@ -141,9 +143,10 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpsertProductService(ProductService model)
         {
-            if (string.IsNullOrWhiteSpace(model.Title) || string.IsNullOrWhiteSpace(model.Description))
+            if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Title and Description are required for a Product/Service.";
+                var error = ModelState.Values.SelectMany(v => v.Errors).FirstOrDefault()?.ErrorMessage;
+                TempData["ErrorMessage"] = error ?? "Please correct the errors in the Product/Service form.";
                 return RedirectToAction("Index", new { activeTab = "content-products" });
             }
 
@@ -174,6 +177,13 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateContact(ContactInfo model)
         {
+            if (!ModelState.IsValid)
+            {
+                var error = ModelState.Values.SelectMany(v => v.Errors).FirstOrDefault()?.ErrorMessage;
+                TempData["ErrorMessage"] = error ?? "Please correct the errors in the Contact form.";
+                return RedirectToAction("Index", new { activeTab = "content-contact" });
+            }
+
             var adminId = GetCurrentAdminId();
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
 
@@ -188,9 +198,10 @@ namespace LuarcaDynamicPortfolio.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateOwner(OwnerInfo model)
         {
-            if (string.IsNullOrWhiteSpace(model.FullName))
+            if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Owner Full Name is required.";
+                var error = ModelState.Values.SelectMany(v => v.Errors).FirstOrDefault()?.ErrorMessage;
+                TempData["ErrorMessage"] = error ?? "Please correct the errors in the Owner form.";
                 return RedirectToAction("Index", new { activeTab = "content-owner" });
             }
 

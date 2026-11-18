@@ -55,8 +55,8 @@
                         <!-- User Profile Dropdown -->
                         <li class="nav-item dropdown ms-lg-3">
                             @{
-                                var displayName = User.FindFirst("FullName")?.Value ?? User.Identity.Name ?? "User";
-                                var initial = !string.IsNullOrEmpty(displayName) ? displayName.Substring(0, 1).ToUpper() : "U";
+                                var displayName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "User";
+                                var initial = !string.IsNullOrWhiteSpace(displayName) ? displayName.Trim().Substring(0, 1).ToUpper() : "U";
                             }
                             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="author-avatar">@initial</span>
@@ -65,7 +65,7 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li class="px-3 py-2 border-bottom border-dark">
                                     <div class="overline text-muted mb-0">Signed in as</div>
-                                    <div class="fw-bold text-light">@User.Identity.Name</div>
+                                    <div class="fw-bold text-light">@(User.Identity?.Name ?? "User")</div>
                                     <span class="badge @(User.IsInRole("Admin") ? "bg-danger" : "bg-secondary") mt-1">
                                         @(User.IsInRole("Admin") ? "Admin" : "User")
                                     </span>

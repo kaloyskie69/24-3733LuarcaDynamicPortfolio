@@ -62,11 +62,11 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 }
             }
 
-            existing.CompanyName = model.CompanyName.Trim();
-            existing.Tagline = model.Tagline?.Trim();
-            existing.AboutDescription = model.AboutDescription?.Trim();
-            existing.Mission = model.Mission?.Trim();
-            existing.Vision = model.Vision?.Trim();
+            existing.CompanyName = Truncate(model.CompanyName.Trim(), 150) ?? string.Empty;
+            existing.Tagline = Truncate(model.Tagline?.Trim(), 250);
+            existing.AboutDescription = Truncate(model.AboutDescription?.Trim(), 4000);
+            existing.Mission = Truncate(model.Mission?.Trim(), 2000);
+            existing.Vision = Truncate(model.Vision?.Trim(), 2000);
             existing.LastModifiedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -98,23 +98,24 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 var existing = await _context.ProductServices.FindAsync(model.ProductServiceId);
                 if (existing == null) return false;
 
-                existing.Title = model.Title.Trim();
-                existing.Description = model.Description.Trim();
-                existing.Category = string.IsNullOrWhiteSpace(model.Category) ? "Service" : model.Category.Trim();
-                existing.Tags = model.Tags?.Trim();
-                existing.ActionUrl = model.ActionUrl?.Trim();
-                existing.DisplayOrder = model.DisplayOrder;
+                existing.Title = Truncate(model.Title.Trim(), 150) ?? string.Empty;
+                existing.Description = Truncate(model.Description.Trim(), 500) ?? string.Empty;
+                existing.Category = Truncate(string.IsNullOrWhiteSpace(model.Category) ? "Service" : model.Category.Trim(), 50) ?? "Service";
+                existing.Tags = Truncate(model.Tags?.Trim(), 300);
+                existing.ActionUrl = Truncate(model.ActionUrl?.Trim(), 300);
+                existing.DisplayOrder = Math.Clamp(model.DisplayOrder, 0, 9999);
                 existing.IsActive = model.IsActive;
 
                 await _auditService.LogAsync(adminUserId, "ADMIN_UPDATE_CONTENT", $"Updated Product/Service: {model.Title}", ipAddress);
             }
             else
             {
-                model.Title = model.Title.Trim();
-                model.Description = model.Description.Trim();
-                model.Category = string.IsNullOrWhiteSpace(model.Category) ? "Service" : model.Category.Trim();
-                model.Tags = model.Tags?.Trim();
-                model.ActionUrl = model.ActionUrl?.Trim();
+                model.Title = Truncate(model.Title.Trim(), 150) ?? string.Empty;
+                model.Description = Truncate(model.Description.Trim(), 500) ?? string.Empty;
+                model.Category = Truncate(string.IsNullOrWhiteSpace(model.Category) ? "Service" : model.Category.Trim(), 50) ?? "Service";
+                model.Tags = Truncate(model.Tags?.Trim(), 300);
+                model.ActionUrl = Truncate(model.ActionUrl?.Trim(), 300);
+                model.DisplayOrder = Math.Clamp(model.DisplayOrder, 0, 9999);
 
                 _context.ProductServices.Add(model);
                 await _auditService.LogAsync(adminUserId, "ADMIN_UPDATE_CONTENT", $"Added Product/Service: {model.Title}", ipAddress);
@@ -178,11 +179,11 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 }
             }
 
-            existing.Address = model.Address?.Trim();
-            existing.ContactNumber = model.ContactNumber?.Trim();
-            existing.Email = model.Email?.Trim();
-            existing.OfficeHours = model.OfficeHours?.Trim();
-            existing.SocialLinks = model.SocialLinks?.Trim();
+            existing.Address = Truncate(model.Address?.Trim(), 300);
+            existing.ContactNumber = Truncate(model.ContactNumber?.Trim(), 50);
+            existing.Email = Truncate(model.Email?.Trim(), 150);
+            existing.OfficeHours = Truncate(model.OfficeHours?.Trim(), 150);
+            existing.SocialLinks = Truncate(model.SocialLinks?.Trim(), 300);
             existing.LastModifiedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -231,10 +232,10 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 }
             }
 
-            existing.FullName = model.FullName.Trim();
-            existing.TitleRole = model.TitleRole?.Trim();
-            existing.Bio = model.Bio?.Trim();
-            existing.ProfileImagePath = model.ProfileImagePath?.Trim();
+            existing.FullName = Truncate(model.FullName.Trim(), 150) ?? string.Empty;
+            existing.TitleRole = Truncate(model.TitleRole?.Trim(), 150);
+            existing.Bio = Truncate(model.Bio?.Trim(), 4000);
+            existing.ProfileImagePath = Truncate(model.ProfileImagePath?.Trim(), 300);
             existing.LastModifiedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -278,6 +279,12 @@ namespace LuarcaDynamicPortfolio.Mvc.Services.Implementations
                 .Where(p => p.IsActive)
                 .OrderBy(p => p.DisplayOrder)
                 .ToListAsync();
+        }
+
+        private static string? Truncate(string? value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength);
         }
     }
 }

@@ -19,13 +19,13 @@
 
             <div class="mb-3">
                 <label asp-for="UsernameOrEmail" class="form-label">Username or Email</label>
-                <input asp-for="UsernameOrEmail" class="form-control" placeholder="Enter username or email" autofocus />
+                <input asp-for="UsernameOrEmail" class="form-control" placeholder="Enter username or email" maxlength="150" autofocus />
                 <span asp-validation-for="UsernameOrEmail" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                <input asp-for="Password" class="form-control" placeholder="Enter your password" maxlength="200" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
